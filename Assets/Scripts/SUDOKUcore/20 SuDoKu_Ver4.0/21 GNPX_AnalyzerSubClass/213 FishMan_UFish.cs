@@ -69,10 +69,8 @@ namespace GNPXcore
 
             bool basicFish = (BasesetFilter.BitCount() <= 9) & !FinnedFlag;  //not F/M & notF/M
             int BaseSelR = 0x3FFFF ^ BasesetFilter;
-#if RegularVersion
-                                    GeneralLogicGen.ChkBas1=0;
-                                    GeneralLogicGen.ChkBas2=0;
-#endif
+            GeneralLogicGen.ChkBas1=0;
+            GeneralLogicGen.ChkBas2=0;
             //int kx=0;
             //HBLst.ForEach( P => WriteLine( $"kx:{kx++} {P}" ) );
 
@@ -81,9 +79,7 @@ namespace GNPXcore
             int nxt = int.MaxValue;
             while (cmbBas.Successor(skip: nxt))
             {
-#if RegularVersion
-                                    int chk1=++GeneralLogicGen.ChkBas1;
-#endif
+                int chk1=++GeneralLogicGen.ChkBas1;
                 int usedLK = 0;
                 Bit81 BaseB81 = new Bit81();
                 Bit81 EndoFinB81 = new Bit81();
@@ -113,9 +109,7 @@ namespace GNPXcore
                                 if( extFlag && !__IsLinked9(BaseB81) )  continue;
                 */
 
-#if RegularVersion
-                                    int chk2=++GeneralLogicGen.ChkBas2;
-#endif
+                int chk2=++GeneralLogicGen.ChkBas2;
 
                 UFish UF = new UFish(no, sz, usedLK, BaseB81, EndoFinB81);    //Baseset
                 yield return UF;
@@ -201,9 +195,7 @@ namespace GNPXcore
             int nxt = int.MaxValue;
             while (cmbCov.Successor(skip: nxt))
             {
-#if RegularVersion
-                                int chk1=++GeneralLogicGen.ChkCov1;
-#endif
+                int chk1=++GeneralLogicGen.ChkCov1;
 
 
                 if (sz == 3)

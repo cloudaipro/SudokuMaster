@@ -83,9 +83,7 @@ namespace GNPXcore
 
 
         public TimeSpan SdkExecTime;
-#if RegularVersion
 		public SuperLinkMan SprLKsMan;
-#endif
         public List<UAlgMethod> SolverLst0;
         private int[,] Sol99sta { get => NuPz_Win.Sol99sta; } //int[,]
 
@@ -95,9 +93,7 @@ namespace GNPXcore
         {
             SolverLst0 = new List<UAlgMethod>();
             this.pGNPX_Eng = pGNPX_Eng;
-#if RegularVersion
 			SprLKsMan=new SuperLinkMan(this);
-#endif
             //================================================================================================
             //  UAlgMethod( int pid, string MethodName, int DifLevel, dSolver Method, bool GenLogB=false )
             //================================================================================================
@@ -108,12 +104,10 @@ namespace GNPXcore
             SolverLst0.Add(new UAlgMethod(3, "NakedSingle", 1, SSingle.NakedSingle));
             SolverLst0.Add(new UAlgMethod(4, "HiddenSingle", 1, SSingle.HiddenSingle, myMethod: SSingle.MyHiddenSingle));
 
-#if RegularVersion
           //var GLTech=new GeneralLogicGen(this);
           //SolverLst0.Add( new UAlgMethod( 6, " GeneralLogic",  2, GLTech.GeneralLogic, true) );
             var GLTech2=new GeneralLogicGen2(this);
             SolverLst0.Add( new UAlgMethod( 5, " GeneralLogicEx",  2, GLTech2.GeneralLogic2, true) );
-#endif
 
             var LockedCand = new LockedCandidateGen(this);
             SolverLst0.Add(new UAlgMethod(5, "LockedCandidate", 2, LockedCand.LockedCandidate));
@@ -147,7 +141,6 @@ namespace GNPXcore
             SolverLst0.Add(new UAlgMethod(43, "Finned Squirmbag", 7, Fish.FinnedSquirmbag));//not complementary with fin
             SolverLst0.Add(new UAlgMethod(44, "Finned Whale", 7, Fish.FinnedWhale));    //not complementary with fin
             SolverLst0.Add(new UAlgMethod(45, "Finned Leviathan", 7, Fish.FinnedLeviathan));//not complementary with fin
-#if RegularVersion
             SolverLst0.Add( new UAlgMethod( 90, "Franken/MutantFish",         8, Fish.FrankenMutantFish ) );
             SolverLst0.Add( new UAlgMethod( 91, "Finned Franken/Mutant Fish", 8, Fish.FinnedFrankenMutantFish ) );
 
@@ -156,9 +149,7 @@ namespace GNPXcore
 
             SolverLst0.Add( new UAlgMethod( 101, "Cannibalistic F/M Fish",      11, Fish.CannibalisticFMFish ) );
             SolverLst0.Add( new UAlgMethod( 101, "FinnedCannibalistic F/M Fish",11, Fish.FinnedCannibalisticFMFish ) );
-#endif
 
-#if RegularVersion
             var nxgCellLink=new NXGCellLinkGen(this);
             SolverLst0.Add( new UAlgMethod( 50, "Skyscraper",       5, nxgCellLink.Skyscraper ) );
             SolverLst0.Add( new UAlgMethod( 51, "EmptyRectangle",   5, nxgCellLink.EmptyRectangle ) );
@@ -206,7 +197,6 @@ namespace GNPXcore
             SolverLst0.Add( new UAlgMethod( 112, "ForceChain_CellEx",  13, GNLTech.ForceChain_CellEx ) );
 	        SolverLst0.Add( new UAlgMethod( 114, "ForceChain_HouseEx", 13, GNLTech.ForceChain_HouseEx ) );
 	        SolverLst0.Add( new UAlgMethod( 116, "ForceChain_ContradictionEx",13, GNLTech.ForceChain_ContradictionEx ) );
-#endif
 
 
             SolverLst0.Sort((a, b) => (a.ID - b.ID));
@@ -215,9 +205,7 @@ namespace GNPXcore
         public void Initialize_Solvers()
         {
             pGP.extResult = "";
-#if RegularVersion
 			SprLKsMan.Initialize();
-#endif
         }
         //==========================================================
 

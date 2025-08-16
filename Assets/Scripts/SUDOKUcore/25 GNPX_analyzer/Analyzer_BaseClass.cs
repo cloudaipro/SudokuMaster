@@ -41,11 +41,9 @@ namespace GNPXcore
         }
 
 
-#if RegularVersion
 		public SuperLinkMan	 pSprLKsMan{ get=>pAnMan.SprLKsMan; }
         public CellLinkMan   CeLKMan{    get=>pAnMan.SprLKsMan.CeLKMan; }
         public ALSLinkMan    ALSMan{     get=>pAnMan.SprLKsMan.ALSMan; }
-#endif
         public Bit81[] Qtrue;
         public Bit81[] Qfalse;
         public object[,] chainDesLK;

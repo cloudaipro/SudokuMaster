@@ -58,7 +58,6 @@ namespace GNPXcore
       //-----------------------------------------------------------------------
         // Frankenn/MutantFish
         private const int _rcbSel=0x7FFFFFF;
-#if RegularVersion
         public bool FrankenMutantFish( ){       
             for( int sz=2; sz<=4; sz++ ){   //no fin: max size is 4
                 for( int no=0; no<9; no++ ){
@@ -89,7 +88,6 @@ namespace GNPXcore
             }
             return false;
         }
-#endif
 
         //-----------------------------------------------------------------------
         private FishMan FMan = null;
