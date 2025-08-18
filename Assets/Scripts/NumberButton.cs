@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-public class NumberButton : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
+public class NumberButton : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
 {
 
     [System.Serializable]
@@ -13,6 +13,9 @@ public class NumberButton : MonoBehaviour, IPointerClickHandler, IPointerDownHan
     public Image backgroundGraphic;
 
     public bool buttonEnabled = true;
+    
+    [Header("Number Lock Settings")]
+    public float holdDuration = 0.4f;
 
     public Color defaultColor = Color.white;
     public Color hoverColor = Color.white;
@@ -25,8 +28,15 @@ public class NumberButton : MonoBehaviour, IPointerClickHandler, IPointerDownHan
 
     public int value = 0;
     public int sub_value = 0;
-    [SerializeField] GameObject number_text;
+    [SerializeField] public GameObject number_text;
     [SerializeField] GameObject sub_text;
+    
+    // Number Lock functionality
+    private bool isHolding = false;
+    private bool holdCompleted = false;
+    private Coroutine holdCoroutine;
+    private NumberLockManager lockManager;
+    private NumberLockVisualFeedback visualFeedback;
 
     private void Awake()
     {
@@ -35,6 +45,10 @@ public class NumberButton : MonoBehaviour, IPointerClickHandler, IPointerDownHan
         
         number_text.GetComponent<Text>()?.Also(x => x.text = value.ToString());
         sub_text.GetComponent<Text>()?.Also(x => x.text = sub_value.ToString());
+        
+        // Find manager references
+        lockManager = FindObjectOfType<NumberLockManager>();
+        visualFeedback = FindObjectOfType<NumberLockVisualFeedback>();
     }
 
     private void OnEnable()
@@ -81,14 +95,91 @@ public class NumberButton : MonoBehaviour, IPointerClickHandler, IPointerDownHan
         if (!buttonEnabled) return;
 
         StartCoroutine(Transition(pressedScale, pressedColor, 0.25f));
+        
+        // Start hold detection for number lock
+        isHolding = true;
+        holdCompleted = false;
+        
+        if (holdCoroutine != null)
+        {
+            StopCoroutine(holdCoroutine);
+        }
+        
+        holdCoroutine = StartCoroutine(HoldDetection());
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
         if (!buttonEnabled) return;
 
-        StartCoroutine(Transition(hoverScale, hoverColor, 0.25f));
-        GameEvents.UpdateSquareNumberMethod(value);
+        // Only process regular click if hold was not completed
+        if (!holdCompleted)
+        {
+            StartCoroutine(Transition(hoverScale, hoverColor, 0.25f));
+            
+            // Check if this number is already locked and toggle if so
+            if (lockManager != null && lockManager.IsNumberLocked(value))
+            {
+                lockManager.UnlockNumber();
+            }
+            else
+            {
+                GameEvents.UpdateSquareNumberMethod(value);
+            }
+        }
+        
+        // Reset hold state
+        holdCompleted = false;
+    }
+    
+    void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
+    {
+        if (!buttonEnabled) return;
+        
+        // Stop holding
+        isHolding = false;
+        
+        if (holdCoroutine != null)
+        {
+            StopCoroutine(holdCoroutine);
+            holdCoroutine = null;
+        }
+        
+        // Stop visual feedback
+        if (visualFeedback != null)
+        {
+            visualFeedback.StopFeedback();
+        }
+        
+        // If hold was completed, activate the lock
+        if (holdCompleted && lockManager != null)
+        {
+            lockManager.LockNumber(value, this);
+        }
+    }
+    
+    private IEnumerator HoldDetection()
+    {
+        // Start visual feedback immediately
+        if (visualFeedback != null)
+        {
+            visualFeedback.StartFeedback(transform.position, value);
+        }
+        
+        // Wait for hold duration
+        float elapsedTime = 0f;
+        
+        while (elapsedTime < holdDuration && isHolding)
+        {
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        
+        // If we completed the hold duration and still holding
+        if (isHolding && elapsedTime >= holdDuration)
+        {
+            holdCompleted = true;
+        }
     }
 
 

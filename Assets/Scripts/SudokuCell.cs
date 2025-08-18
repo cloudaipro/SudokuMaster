@@ -60,6 +60,9 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
     public bool Indicated { get; set; } = false;
     //public bool HightlightedSameNumber { get; set; } = false;
     public int DesiredNumnber { get; set; } = -1;
+    
+    // Number Lock functionality
+    private NumberLockManager lockManager;
 
     void Start()
     {
@@ -71,6 +74,9 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
         //    SetClearEmptyNotes();
         //else
             ClearupAllNotes();
+            
+        // Find NumberLockManager reference
+        lockManager = FindObjectOfType<NumberLockManager>();
     }
 
     private void OnEnable()
@@ -283,6 +289,19 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
     public void OnSquareSelected(int selectedIndex)
     {
         IsSelected = (selectedIndex == Cell_index);
+        
+        // If this cell is selected and there's a locked number, automatically input it
+        if (IsSelected && lockManager != null && lockManager.HasLockedNumber() && !Has_default_value)
+        {
+            int lockedNumber = lockManager.GetLockedNumber();
+            
+            // Only input if the cell is empty or has the wrong value
+            if (Number == 0 || Has_Wrong_value)
+            {
+                // Simulate number input through the existing system
+                OnSetNumber(lockedNumber);
+            }
+        }
     }
 
     public void UpdateSquareColor()

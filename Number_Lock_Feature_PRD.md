@@ -1,155 +1,126 @@
 # Product Requirements Document (PRD): Number Lock Feature
 
-## 1. Feature Overview
-
-### 1.1 Feature Name
-Number Lock/Pin Mode for Sudoku Input
-
-### 1.2 Purpose
+## Overview
 Enable users to lock a specific number for rapid sequential entry across multiple cells, improving gameplay efficiency for users who need to place the same number in multiple locations.
 
-### 1.3 Target Users
-- Intermediate to advanced Sudoku players
-- Users who prefer strategic number placement patterns
-- Players who want to optimize their solving workflow
+## Visual Reference
+The following images demonstrate the Number Lock feature interaction flow:
 
-## 2. Feature Requirements
+- **Initial State**: `IMG_2472.jpg` - Shows the normal number pad in the red area where users can tap and hold
+- **Lock Initiation**: `IMG_2473.PNG` - Shows enlarged number 5 overlay when tap-and-hold begins
+- **Progress at 0.2s**: `IMG_2477.PNG` - Shows progress bar appearing above the enlarged number
+- **Progress at 0.4s**: `IMG_2478.PNG` - Shows progress bar filled, indicating lock readiness
+- **Locked State**: `IMG_2479.PNG` - Shows final locked state with blue background (RGB: 70, 93, 170)
+- **Alternative Locked View**: `IMG_2465.PNG` - Shows another example of locked number with blue background
 
-### 2.1 Functional Requirements
+## Problem Statement
+Players often need to enter the same number across multiple cells in a Sudoku puzzle. The current input method requires selecting the number from the number pad for each cell entry, which is inefficient and slows down gameplay flow.
 
-#### 2.1.1 Number Lock Activation
-- **Trigger**: Long press (tap and hold) on any number button (1-9) in the number input panel
-- **Duration**: 3-second hold to activate lock
-- **Visual Feedback**: 
-  - Immediate overlay showing enlarged number during hold
-  - Progress bar indicating hold duration (0-3 seconds)
-  - Visual state change when lock is activated
+## Solution
+Implement a "Number Lock" feature that allows users to lock a specific number through a tap-and-hold gesture, enabling rapid sequential entry across multiple cells.
 
-#### 2.1.2 Locked State Behavior
-- **Visual Indicator**: Locked number displays with distinct visual styling (highlighted background)
-- **Input Mode**: Clicking any empty cell automatically enters the locked number
-- **State Persistence**: Lock remains active until manually deactivated
-- **Single Lock**: Only one number can be locked at a time
+## User Stories
+- As a Sudoku player, I want to lock a number so I can quickly fill multiple cells with the same value
+- As a player, I want visual feedback during the lock process so I know when the feature is activated
+- As a player, I want to easily unlock a number when I'm done using it
 
-#### 2.1.3 Number Lock Deactivation
-- **Trigger**: Single tap on the currently locked number
-- **Effect**: Returns to normal input mode
-- **Visual Update**: Removes lock visual indicators
+## Functional Requirements
 
-### 2.2 Non-Functional Requirements
+### Core Functionality
+1. **Number Lock Activation**
+   - User performs tap-and-hold gesture on any number (1-9) in the number pad
+   - Lock activation requires 0.4-second hold duration
+   - Visual feedback provided throughout the hold process
 
-#### 2.2.1 Performance
-- Smooth animations for lock activation/deactivation
-- No input lag during locked mode operations
-- Responsive touch feedback
+2. **Visual Feedback System**
+   - **Immediate Response (0.0s)**: Enlarged number overlay appears above the selected number (see `IMG_2473.PNG`)
+   - **Progress Indicator (0.2s)**: Small progress bar appears on top of enlarged number (see `IMG_2477.PNG`)
+   - **Progress Fill (0.4s)**: Progress bar fills completely, indicating lock readiness (see `IMG_2478.PNG`)
+   - **Lock State**: Number background changes to blue (RGB: 70, 93, 170), white number text (see `IMG_2479.PNG` and `IMG_2465.PNG`)
 
-#### 2.2.2 Usability
-- Clear visual distinction between locked and unlocked states
-- Intuitive gesture recognition (long press vs. tap)
-- Consistent with existing UI design patterns
+3. **Locked Number Behavior**
+   - Clicking any empty cell automatically enters the locked number
+   - Locked state persists until manually unlocked
+   - Only one number can be locked at a time
 
-#### 2.2.3 Compatibility
-- Works across all difficulty levels
-- Maintains game save/load capabilities
+4. **Number Unlock**
+   - Single tap on the currently locked number unlocks it
+   - Number returns to normal appearance
+   - Auto-entry behavior deactivates
 
-## 3. User Experience Flow
+### Technical Specifications
+- **Hold Duration**: 0.4 seconds minimum for lock activation
+- **Progress Bar Timing**: 
+  - Appears at 0.2 seconds
+  - Fills completely at 0.4 seconds
+- **Lock Color**: RGB(70, 93, 170) background with white text
+- **Overlay Scale**: Enlarged number should be visually prominent but not obstruct gameplay
 
-### 3.1 Lock Activation Sequence
-1. User identifies need to place same number multiple times
-2. User long-presses desired number in input panel
-3. System shows enlarged number overlay immediately
-4. Progress bar appears and fills over 3 seconds
-5. After 3 seconds, number enters locked state with visual confirmation
-6. User can now tap empty cells to auto-fill with locked number
+## Non-Functional Requirements
+- **Performance**: Lock activation should be responsive with no noticeable lag
+- **Accessibility**: Visual feedback must be clear and easily distinguishable
+- **Persistence**: Lock state maintained during game session but reset on game restart
+- **Validation**: Locked number entry still subject to Sudoku validation rules
 
-### 3.2 Lock Usage
-1. User taps empty cells in sequence
-2. Each tap automatically fills cell with locked number
-3. Standard validation rules apply (no invalid moves)
-4. User continues until all desired placements complete
+## User Experience Flow
 
-### 3.3 Lock Deactivation
-1. User taps the locked number once
-2. System returns to normal input mode
-3. Visual lock indicators disappear
-4. Standard number selection behavior resumes
+### Lock Activation Sequence
+1. User identifies need to enter same number multiple times
+2. User taps and holds desired number in number pad
+3. Enlarged number overlay appears immediately
+4. Progress bar shows at 0.2 seconds
+5. Progress bar fills by 0.4 seconds
+6. User releases touch - number becomes locked (blue background)
+7. User taps empty cells to auto-enter locked number
+8. User taps locked number to unlock when finished
 
-## 4. Technical Specifications
+### Error Handling
+- If user releases before 0.4 seconds: No lock activation, return to normal state
+- If locked number violates Sudoku rules: Show normal validation error, maintain lock
+- If all instances of locked number are placed: Keep lock active for potential corrections
 
-### 4.1 UI Components Required
-- **Lock Overlay**: Enlarged number display during hold gesture
-- **Progress Bar**: 3-second countdown indicator
-- **Lock State Visual**: Background/border styling for locked numbers
-- **Lock Icon**: Small indicator showing locked status
+## Success Metrics
+- Reduced time for multi-cell number entry
+- Improved user satisfaction for rapid number placement
+- Minimal learning curve for existing users
+- No increase in accidental number entries
 
-### 4.2 State Management
-- **Lock State Variable**: Track which number (if any) is currently locked
-- **Timer System**: 3-second countdown for lock activation
-- **Input Mode Flag**: Toggle between normal and locked input modes
-
-### 4.3 Integration Points
-- **Number Panel**: Existing 1-9 input buttons need gesture detection
-- **Cell Input**: Empty cell tap behavior modification when locked
-- **Game State**: Lock status in save/load functionality
-- **Validation**: Maintain existing Sudoku rule checking
-
-## 5. Implementation Flowchart
+## Implementation Flowchart
 
 ```mermaid
 flowchart TD
-    A[Start] --> B[User Long Presses Number Button]
-    B --> C[Show Enlarged Number Overlay]
-    C --> D[Start 3-Second Timer with Progress Bar]
-    D --> E{Timer Complete?}
-    E -->|No| F[Return to Normal State]
-    E -->|Yes| G[Set Number as Locked]
-    G --> H[Update Visual State - Lock Indicator]
-    H --> I{User Action?}
-    I -->|Taps Empty Cell| J[Auto-Fill Cell with Locked Number]
-    I -->|Taps Locked Number| M[Deactivate Lock Mode]
-    I -->|Other Action| I
-    J --> K{Valid Move?}
-    K -->|Yes| L[Confirm Cell Entry]
-    K -->|No| N[Show Error - Don't Fill Cell]
-    L --> I
-    N --> I
-    M --> O[Return to Normal Input Mode]
-    O --> P[End]
-    F --> P
-    
-    style A fill:#e1f5fe
-    style P fill:#f3e5f5
-    style G fill:#e8f5e8
-    style M fill:#fff3e0
-    style N fill:#ffebee
+    A[START] --> B[User taps and holds number in number pad]
+    B --> C[Show enlarged number overlay immediately]
+    C --> D[Wait 0.2 seconds]
+    D --> E[Show progress bar]
+    E --> F[Wait additional 0.2 seconds]
+    F --> G[Fill progress bar]
+    G --> H{User still holding?}
+    H -->|YES| I[User releases touch]
+    H -->|NO| J[Return to normal state<br/>No lock activation]
+    I --> K[Activate number lock]
+    K --> L[Change number appearance<br/>Blue background RGB: 70, 93, 170]
+    L --> M{User interaction}
+    M -->|Taps empty cell| N[Enter locked number]
+    M -->|Taps locked number| O[Unlock number]
+    N --> P[Validate placement]
+    P --> Q[Continue locked state]
+    Q --> M
+    O --> R[Return to normal appearance]
+    R --> S[END lock mode]
+    J --> S
 ```
 
-## 6. Success Metrics
+## Dependencies
+- Existing number pad UI system
+- Cell input validation system
+- Touch input handling
+- UI animation system
+- Game state management
 
-### 6.1 User Engagement
-- Adoption rate of number lock feature
-- Frequency of use per game session
-- User retention with feature vs. without
-
-### 6.2 Usability
-- Success rate of lock activation attempts
-- Average time to understand feature functionality
-- User error rate during locked input mode
-
-### 6.3 Performance
-- Response time for lock activation
-- Smooth animation performance across devices
-- No impact on overall game performance
-
-## 7. Future Considerations
-
-### 7.1 Potential Enhancements
-- Multiple number lock capability
-- Customizable hold duration
+## Future Considerations
+- Multi-number lock capability
+- Lock state persistence across game sessions  
+- Additional visual themes for locked numbers
 - Audio feedback for lock activation
-- Lock mode indicator in game HUD
-
-### 7.2 Accessibility
-- Voice-over compatibility for lock states
-- High contrast mode support
-- Alternative activation methods for motor accessibility
+- Gesture alternatives for accessibility
