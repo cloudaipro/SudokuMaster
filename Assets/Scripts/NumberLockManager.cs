@@ -232,6 +232,10 @@ public class NumberLockManager : MonoBehaviour
         {
             Debug.Log($"Triggering auto indication for locked number {number}");
             
+            // CRITICAL FIX: Clear ALL cell selections and highlights first
+            // This ensures no previous cell highlighting conflicts with lock highlighting
+            sudokuBoard.ClearAllCellSelections();
+            
             // Highlight all cells with the locked number (this also clears existing highlights)
             sudokuBoard.HighlightAllCellsWithNumber(number);
         }

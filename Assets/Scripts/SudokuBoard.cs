@@ -477,6 +477,23 @@ public class SudokuBoard : MonoBehaviour
         grid_squares_.Select(x => x.GetComponent<SudokuCell>()).ForEach(x => x.UpdateSquareColor());
     }
     
+    public void ClearAllCellSelections()
+    {
+        // Clear all cell selections, highlights, and indicators
+        foreach (var cell in grid_squares_)
+        {
+            cell.GetComponent<SudokuCell>().Also(cellComponent =>
+            {
+                cellComponent.IsSelected = false;
+                cellComponent.Indicated = false;
+                cellComponent.DesiredNumnber = -1;
+            });
+        }
+        
+        // Update visual appearance after clearing all selection states
+        grid_squares_.Select(x => x.GetComponent<SudokuCell>()).ForEach(x => x.UpdateSquareColor());
+    }
+    
     public bool IsNumberCompletlyPlaced(int number)
     {
         // Count how many times the number appears in the grid
