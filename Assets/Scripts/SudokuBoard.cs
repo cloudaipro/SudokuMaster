@@ -455,10 +455,45 @@ public class SudokuBoard : MonoBehaviour
 
     public void HighlightAllCellsWithNumber(int number)
     {
+        // First, clear all DesiredNumnber values
         grid_squares_.Select(y => y.GetComponent<SudokuCell>())
-                          //.Where(y => y.Number == number)
+                          .ForEach(y => y.DesiredNumnber = -1);
+        
+        // Then, set DesiredNumnber only for cells that contain the target number
+        grid_squares_.Select(y => y.GetComponent<SudokuCell>())
+                          .Where(y => y.Number == number && (y.Has_default_value || y.IsCorrectNumberSet()))
                           .ForEach(y => y.DesiredNumnber = number);
+                          
+        // CRITICAL: Update visual appearance after setting highlight flags
+        grid_squares_.Select(x => x.GetComponent<SudokuCell>()).ForEach(x => x.UpdateSquareColor());
     }
+    
+    public void ClearAllHighlights()
+    {
+        grid_squares_.Select(y => y.GetComponent<SudokuCell>())
+                          .ForEach(y => y.DesiredNumnber = -1);
+                          
+        // CRITICAL: Update visual appearance after clearing highlight flags
+        grid_squares_.Select(x => x.GetComponent<SudokuCell>()).ForEach(x => x.UpdateSquareColor());
+    }
+    
+    public bool IsNumberCompletlyPlaced(int number)
+    {
+        // Count how many times the number appears in the grid
+        int count = 0;
+        foreach (var square in grid_squares_)
+        {
+            var cell = square.GetComponent<SudokuCell>();
+            if (cell != null && cell.Number == number && (cell.Has_default_value || cell.IsCorrectNumberSet()))
+            {
+                count++;
+            }
+        }
+        
+        // In a standard 9x9 Sudoku, each number should appear exactly 9 times
+        return count >= 9;
+    }
+    
     public void OnWillSetNumber(int square_index, int value)
     {
         if (fastNoteMode && backupGridNote != null)

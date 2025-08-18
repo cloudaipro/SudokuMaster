@@ -35,6 +35,7 @@ public class NumberButton : MonoBehaviour, IPointerClickHandler, IPointerDownHan
     private bool isHolding = false;
     private bool holdCompleted = false;
     private Coroutine holdCoroutine;
+    private Coroutine transitionCoroutine;
     private NumberLockManager lockManager;
     private NumberLockVisualFeedback visualFeedback;
 
@@ -79,6 +80,9 @@ public class NumberButton : MonoBehaviour, IPointerClickHandler, IPointerDownHan
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (!buttonEnabled) return;
+        
+        // Don't show hover effects if button is locked
+        if (IsCurrentlyLocked()) return;
 
         StartCoroutine(Transition(hoverScale, hoverColor, 0.25f));
     }
@@ -86,6 +90,9 @@ public class NumberButton : MonoBehaviour, IPointerClickHandler, IPointerDownHan
     void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
     {
         if (!buttonEnabled) return;
+        
+        // Don't show exit effects if button is locked
+        if (IsCurrentlyLocked()) return;
 
         StartCoroutine(Transition(defaultScale, defaultColor, 0.25f));
     }
@@ -94,18 +101,23 @@ public class NumberButton : MonoBehaviour, IPointerClickHandler, IPointerDownHan
     {
         if (!buttonEnabled) return;
 
-        StartCoroutine(Transition(pressedScale, pressedColor, 0.25f));
-        
-        // Start hold detection for number lock
+        // Start transition first, then wait for completion before starting hold detection
         isHolding = true;
         holdCompleted = false;
         
+        // Stop any existing coroutines
         if (holdCoroutine != null)
         {
             StopCoroutine(holdCoroutine);
+            holdCoroutine = null;
+        }
+        if (transitionCoroutine != null)
+        {
+            StopCoroutine(transitionCoroutine);
         }
         
-        holdCoroutine = StartCoroutine(HoldDetection());
+        // Start the sequential process: Transition first, then HoldDetection
+        transitionCoroutine = StartCoroutine(WaitForTransitionComplete());
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -115,15 +127,35 @@ public class NumberButton : MonoBehaviour, IPointerClickHandler, IPointerDownHan
         // Only process regular click if hold was not completed
         if (!holdCompleted)
         {
-            StartCoroutine(Transition(hoverScale, hoverColor, 0.25f));
-            
-            // Check if this number is already locked and toggle if so
-            if (lockManager != null && lockManager.IsNumberLocked(value))
+            // Don't start transition if button is already locked (unless we're unlocking)
+            bool willUnlock = (lockManager != null && lockManager.IsNumberLocked(value));
+            if (!IsCurrentlyLocked() || willUnlock)
             {
+                StartCoroutine(Transition(hoverScale, hoverColor, 0.25f));
+            }
+            
+            // Handle smart lock switching - check if different number is locked
+            if (lockManager != null && lockManager.HasLockedNumber())
+            {
+                if (lockManager.IsNumberLocked(value))
+                {
+                    // Same number - toggle unlock
+                    lockManager.UnlockNumber();
+                }
+                else
+                {
+                    // Different number - switch lock
+                    lockManager.SwitchLockedNumber(value, this);
+                }
+            }
+            else if (lockManager != null && lockManager.IsNumberLocked(value))
+            {
+                // Toggle unlock if this number is locked
                 lockManager.UnlockNumber();
             }
             else
             {
+                // Normal number input
                 GameEvents.UpdateSquareNumberMethod(value);
             }
         }
@@ -145,6 +177,12 @@ public class NumberButton : MonoBehaviour, IPointerClickHandler, IPointerDownHan
             holdCoroutine = null;
         }
         
+        if (transitionCoroutine != null)
+        {
+            StopCoroutine(transitionCoroutine);
+            transitionCoroutine = null;
+        }
+        
         // Stop visual feedback
         if (visualFeedback != null)
         {
@@ -155,6 +193,19 @@ public class NumberButton : MonoBehaviour, IPointerClickHandler, IPointerDownHan
         if (holdCompleted && lockManager != null)
         {
             lockManager.LockNumber(value, this);
+        }
+    }
+    
+    // NEW: Sequential coroutine management
+    private IEnumerator WaitForTransitionComplete()
+    {
+        // Start transition first
+        yield return StartCoroutine(Transition(pressedScale, pressedColor, 0.25f));
+        
+        // After transition completes, check if still holding and start hold detection
+        if (isHolding)
+        {
+            holdCoroutine = StartCoroutine(HoldDetection());
         }
     }
     
@@ -182,6 +233,41 @@ public class NumberButton : MonoBehaviour, IPointerClickHandler, IPointerDownHan
         }
     }
 
+    // Check if this button is currently locked
+    private bool IsCurrentlyLocked()
+    {
+        return lockManager != null && lockManager.IsNumberLocked(value);
+    }
+    
+    // Stop all transitions when button becomes locked
+    public void StopTransitionsForLock()
+    {
+        if (transitionCoroutine != null)
+        {
+            StopCoroutine(transitionCoroutine);
+            transitionCoroutine = null;
+        }
+        
+        // Note: We don't call StopAllCoroutines() to avoid stopping
+        // other important coroutines like HoldDetection
+    }
+    
+    // Get the original sub_text color for lock state management
+    public Color GetOriginalSubTextColor()
+    {
+        Text subTextComponent = sub_text?.GetComponent<Text>();
+        return subTextComponent != null ? subTextComponent.color : Color.white;
+    }
+    
+    // Set sub_text color (used by NumberLockManager)
+    public void SetSubTextColor(Color color)
+    {
+        Text subTextComponent = sub_text?.GetComponent<Text>();
+        if (subTextComponent != null)
+        {
+            subTextComponent.color = color;
+        }
+    }
 
     public IEnumerator Transition(Vector3 newSize, Color newColor, float transitionTime)
     {
@@ -195,8 +281,23 @@ public class NumberButton : MonoBehaviour, IPointerClickHandler, IPointerDownHan
 
             yield return null;
 
+            // Always transition scale
             transform.localScale = Vector3.Lerp(startSize, newSize, timer / transitionTime);
-            backgroundGraphic.color = Color.Lerp(startColor, newColor, timer / transitionTime);
+            
+            // Only transition color if not currently locked
+            if (!IsCurrentlyLocked())
+            {
+                backgroundGraphic.color = Color.Lerp(startColor, newColor, timer / transitionTime);
+            }
+        }
+        
+        // Ensure final values are set exactly
+        transform.localScale = newSize;
+        
+        // Only set final color if not locked
+        if (!IsCurrentlyLocked())
+        {
+            backgroundGraphic.color = newColor;
         }
     }
 
