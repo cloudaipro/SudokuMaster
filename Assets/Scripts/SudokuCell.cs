@@ -101,7 +101,21 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
     public override void OnPointerDown(PointerEventData eventData)
     {
         if (GameSettings.Instance.bBoardInteractable)
+        {
             GameEvents.SquareSelectedMethod(Cell_index);
+            
+            // Check for locked number after selection
+            if (lockManager != null && lockManager.HasLockedNumber() && !Has_default_value)
+            {
+                int lockedNumber = lockManager.GetLockedNumber();
+                
+                // Only input if the cell is empty or has the wrong value
+                if (Number == 0 || Has_Wrong_value)
+                {
+                    GameEvents.UpdateSquareNumberMethod(lockedNumber);
+                }
+            }
+        }
     }
 
     public void setCellSize(float size)
@@ -289,19 +303,6 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
     public void OnSquareSelected(int selectedIndex)
     {
         IsSelected = (selectedIndex == Cell_index);
-        
-        // If this cell is selected and there's a locked number, automatically input it
-        if (IsSelected && lockManager != null && lockManager.HasLockedNumber() && !Has_default_value)
-        {
-            int lockedNumber = lockManager.GetLockedNumber();
-            
-            // Only input if the cell is empty or has the wrong value
-            if (Number == 0 || Has_Wrong_value)
-            {
-                // Simulate number input through the existing system
-                OnSetNumber(lockedNumber);
-            }
-        }
     }
 
     public void UpdateSquareColor()
