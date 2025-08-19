@@ -6,17 +6,18 @@ public class Lives : MonoBehaviour
 {
     public static Lives Instance;
     public List<GameObject> error_images;
+    public List<GameObject> normal_x_images;
     public GameObject GameOverPopup;
     public int lives { get; set; } = 0;
     public int error_number { get; set; } = 0;
 
-    // Start is called before the first frame update
     private void Awake()
     {
         if (Instance)
             Destroy(Instance);
         Instance = this;
     }
+    
     void Start()
     {
         lives = error_images.Count;
@@ -31,11 +32,13 @@ public class Lives : MonoBehaviour
             }
         }
     }
+    
     private void OnEnable()
     {
         GameEvents.OnWrongNumber += WrongNumber;
         GameEvents.OnDidFinishLiveRewardAd += DidFinisLiveRewardAd;
     }
+    
     private void OnDisable()
     {
         GameEvents.OnWrongNumber -= WrongNumber;
@@ -46,21 +49,33 @@ public class Lives : MonoBehaviour
     {
         if (error_number < error_images.Count)
         {
-            error_images[error_number++].SetActive(true);
-            lives--;
+            // Only decrement lives if Super Mode is not active
+            if (SuperModeManager.Instance == null || !SuperModeManager.Instance.IsSuperModeActive)
+            {
+                error_images[error_number++].SetActive(true);
+                lives--;
+            }
         }
-        CheckForGameOver();
+        
+        // Only check for game over if Super Mode is not active
+        if (SuperModeManager.Instance == null || !SuperModeManager.Instance.IsSuperModeActive)
+        {
+            CheckForGameOver();
+        }
     }
+    
     private void CheckForGameOver()
     {
         if (lives <= 0)
             DoGameOverProcess();
     }
+    
     public void DoGameOverProcess()
     {
         GameEvents.OnGameOverMethod();
         GameOverPopup.SetActive(true);
     }
+    
     public void DidFinisLiveRewardAd()
     {
         Dispatcher.RunOnMainThread(() =>
@@ -74,8 +89,5 @@ public class Lives : MonoBehaviour
 
             GameEvents.OnSaveProgressDataMethod();
         });
-    //}
-    //public void ResetLives()
-    //{
     }
 }

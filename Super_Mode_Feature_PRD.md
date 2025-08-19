@@ -27,12 +27,11 @@ Players need a way to practice and enjoy Sudoku puzzles without the pressure of 
 ### Feature 1: Super Mode Activation
 
 **Priority**: High
-**User Story**: As a player, when I hold any of the three X markers for 10 seconds, I want to unlock Super Mode so I can play without life limitations.
+**User Story**: As a player, when I hold any of the three X markers for 5 seconds, I want to unlock Super Mode so I can play without life limitations.
 
 **Acceptance Criteria**:
-- Detect long press (10 seconds) on any of the three X markers in the Lives UI
+- Detect long press (5 seconds) on any of the three X markers in the Lives UI
 - Activation works on all three X elements regardless of their current state (visible/hidden)
-- Visual feedback during hold gesture (progress indicator, scaling, or color change)
 - Mode persists for the current game session only
 - Cannot be accidentally triggered by normal taps
 
@@ -42,10 +41,9 @@ Players need a way to practice and enjoy Sudoku puzzles without the pressure of 
 **User Story**: As a player, when Super Mode activates, I want clear visual confirmation through golden X markers and victory sound so I know the mode is active.
 
 **Acceptance Criteria**:
-- Play victory sound effect (reuse existing `Win_Audio` or similar)
+- Play victory sound effect (reuse existing `Win_Audio` in the WinDialog)
 - Change all three X markers to gold color (RGB: 255, 215, 0 or similar gold tone)
 - Maintain gold color throughout the Super Mode session
-- Add subtle glow or sparkle effect to enhanced visual appeal
 - Clear visual distinction from normal red error state
 
 ### Feature 3: Unlimited Lives Implementation
@@ -66,8 +64,8 @@ Players need a way to practice and enjoy Sudoku puzzles without the pressure of 
 
 ```mermaid
 flowchart TD
-    A[User presses X marker] --> B[Start 10-second timer]
-    B --> C{Still holding after 10s?}
+    A[User presses X marker] --> B[Start 5-second timer]
+    B --> C{Still holding after 5s?}
     C -->|Yes| D[Activate Super Mode]
     C -->|No| E[Cancel activation]
     
@@ -103,7 +101,7 @@ flowchart TD
 
 **SuperModeManager.cs**:
 - Singleton pattern for global access
-- Long press detection on X markers (10-second threshold)
+- Long press detection on X markers (5-second threshold)
 - Super Mode state management
 - Integration with Lives system
 - Audio playback coordination
@@ -120,8 +118,6 @@ flowchart TD
 **UI Integration**:
 - Add long press gesture recognizers to X marker GameObjects
 - Implement gold color state for X markers
-- Optional: Progress indicator during 10-second hold
-- Visual feedback system for mode activation
 
 ### Integration Points
 
@@ -140,7 +136,7 @@ flowchart TD
 - **Visual Appeal**: Attractive gold visual state enhances premium feel
 
 ### Technical Performance
-- **Gesture Recognition**: Accurate 10-second hold detection without false positives
+- **Gesture Recognition**: Accurate 5-second hold detection without false positives
 - **Audio Integration**: Smooth sound playback without conflicts
 - **State Management**: Reliable mode activation/deactivation
 - **Compatibility**: No interference with existing save/load or progression systems
@@ -160,7 +156,7 @@ flowchart TD
 - Save/load compatibility
 
 ### UI Tests
-- Visual feedback during 10-second hold
+- Visual feedback during 5-second hold
 - Gold color state rendering
 - X marker interaction responsiveness
 - Audio-visual synchronization
@@ -169,7 +165,7 @@ flowchart TD
 
 ### X Marker States
 1. **Normal State**: Default red X appearance when errors occur
-2. **Super Mode Activation**: Visual feedback during 10-second hold (scaling, opacity, or color shift)
+2. **Super Mode Activation**: Visual feedback during 5-second hold (scaling, opacity, or color shift)
 3. **Super Mode Active**: Gold color (RGB: 255, 215, 0) with optional glow effect
 4. **Error in Super Mode**: Gold X becomes visible but lives don't decrease
 
