@@ -128,8 +128,8 @@ public class SudokuData : MonoBehaviour
             int iLevel = (tmpStr) switch
             {
                 "medium" => Setting.Instance.MediumLevel,
-                "hard" => Setting.Instance.MediumLevel,
-                "extreme" => Setting.Instance.MediumLevel,
+                "hard" => Setting.Instance.HardLevel,
+                "extreme" => Setting.Instance.ExtremeLevel,
                 _ => 0
             };
             iLevel = ((int)((iLevel - 1) / 3)) + 1;
