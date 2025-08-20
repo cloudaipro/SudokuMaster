@@ -8,6 +8,7 @@ A feature-rich Sudoku game built with Unity, offering multiple difficulty levels
 - **Advanced Sudoku Engine**: 50+ solving techniques including fish patterns, chains, and wings
 - **Save/Resume Functionality**: Complete game state persistence with notes and timer
 - **Notes System**: Multiple candidate number support per cell
+- **Number Lock Feature**: Hold number buttons to lock them for rapid input across cells
 - **Hint System**: Intelligent hints powered by the solving engine
 - **Error Tracking**: Mistake counter with game-over mechanics
 - **Monetization Ready**: In-app purchases and advertisement integration
@@ -118,6 +119,7 @@ mono ./Generator.exe 500 72 extreme.txt
 **UI Systems**
 - Interactive cell grid with touch/mouse support
 - Notes system for candidate numbers
+- Number lock system for rapid input (hold number buttons to lock)
 - Timer with pause/resume functionality
 - Error tracking and game-over handling
 

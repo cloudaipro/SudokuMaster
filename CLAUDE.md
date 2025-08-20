@@ -61,6 +61,8 @@ mono ./Generator.exe 500 72 extreme.txt
 **UI Systems**:
 - `MenuButtons`: Scene navigation and game mode selection
 - `SudokuCell`/`SudokuNote`: Interactive cell components with notes support
+- `NumberLockManager`: Number lock system for rapid input (hold to lock numbers)
+- `NumberButton`: Enhanced number buttons with lock functionality
 - `Clock`: Game timer with pause/resume functionality
 - `Lives`: Error tracking system
 - `HintButton`: Hint system integration
@@ -69,8 +71,10 @@ mono ./Generator.exe 500 72 extreme.txt
 
 1. **Game Start**: `GameSettings` determines mode → Load puzzle from `Assets/Resources/Dataset/`
 2. **Gameplay**: `SudokuBoard` manages state → `SudokuCell` handles input → Validation via core engine
-3. **Save/Load**: `Config` serializes complete game state including notes and timer
-4. **Puzzle Generation**: External generator creates datasets stored in Resources
+3. **Number Lock**: Hold number button → `NumberLockManager` locks number → Click cells for rapid input
+4. **Notes Integration**: Note mode + locked numbers = places locked number as notes in cells
+5. **Save/Load**: `Config` serializes complete game state including notes and timer
+6. **Puzzle Generation**: External generator creates datasets stored in Resources
 
 ### Monetization Integration
 
@@ -84,6 +88,7 @@ mono ./Generator.exe 500 72 extreme.txt
 - **Prefabs**: `Assets/Prefabs/` (SudokuCell, SudokuNote)
 - **Puzzle Data**: `Assets/Resources/Dataset/[difficulty]/` (txt files with puzzle arrays)
 - **Scripts**: `Assets/Scripts/` (game logic) + `Assets/Scripts/SUDOKUcore/` (engine)
+- **Number Lock System**: `NumberLockManager.cs`, `NumberButton.cs` with enhanced hold-to-lock functionality
 
 ## Development Notes
 
@@ -92,6 +97,8 @@ mono ./Generator.exe 500 72 extreme.txt
 - Google Play dependencies managed via External Dependency Manager
 - Android builds support App Bundle format for Play Store distribution
 - Notes system supports multiple candidate numbers per cell
+- Number lock system: Hold number buttons to lock, works with both normal and note modes
+- Recent bug fix: Fixed double invocation issue in locked number + note mode by moving logic to OnPointerDown
 - Error tracking limits mistakes before game over
 
 ## Build Configuration
