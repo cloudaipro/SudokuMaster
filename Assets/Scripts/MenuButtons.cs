@@ -38,6 +38,12 @@ public class MenuButtons : MonoBehaviour
         newGame();
         SceneManager.LoadScene(name);
     }
+    public void LoadHellScene(string name) 
+    { 
+        GameSettings.Instance.GameMode = EGameMode.HELL;
+        newGame();
+        SceneManager.LoadScene(name);
+    }
 
     public void ActivateObject(GameObject obj) => obj.SetActive(true);
     public void DeActivateObject(GameObject obj) => obj.SetActive(false);

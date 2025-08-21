@@ -28,6 +28,9 @@ public class SudokuBoard : MonoBehaviour
     public Text HintMessage;
     public Button NextHint;
     public Button PrevHint;
+    
+    [Header("Hell Level Support")]
+    private ValidationContext validationContext;
 
     public int cols = 0;
     public int rows = 0;
@@ -81,6 +84,12 @@ public class SudokuBoard : MonoBehaviour
 
         setBoardPosition();
         CreateGrid();
+        
+        // Initialize ValidationContext for Hell Level support
+        InitializeValidationContext();
+        
+        // Initialize Hell Level UI components
+        InitializeHellLevelUI();
 
         if (GameSettings.Instance.ContinuePreviousGame)
         {
@@ -102,6 +111,7 @@ public class SudokuBoard : MonoBehaviour
             EGameMode.MEDIUM => "", // $" - level {Setting.Instance.MediumLevel}",
             EGameMode.HARD => "", // $" - level {Setting.Instance.HardLevel}",
             EGameMode.EXTREME => "", // $" - level {Setting.Instance.ExtremeLevel}",
+            EGameMode.HELL => " - The Ultimate Challenge",
             _ => ""
         };
 
@@ -360,13 +370,13 @@ public class SudokuBoard : MonoBehaviour
     private void SetGridNumber(string level)
     {
 
-        if (level == "Easy")
+        if (level == "Easy" || level == "Hell")
         {
             //var dataOfLevel = SudokuData.sudoku_game[level];
             //selected_dataIdx = Random.Range(0, dataOfLevel.Count);
             //var data = dataOfLevel[selected_dataIdx];            
             //setCellData(data);
-            var data = Generator.Sudoku_Generator(level);
+            var data = Generator.Sudoku_Generator("Easy");
             setCellData(new SudokuData.SudokuBoardData(data.unsolved, data.solved));
         }
         else
@@ -2141,6 +2151,89 @@ public class SudokuBoard : MonoBehaviour
 
     }
 
+    #endregion
+    
+    #region Hell Level Support
+    
+    private void InitializeValidationContext()
+    {
+        // Add or get ValidationContext component
+        validationContext = GetComponent<ValidationContext>();
+        if (validationContext == null)
+        {
+            validationContext = gameObject.AddComponent<ValidationContext>();
+        }
+        
+        // Initialize with current game mode and grid squares
+        validationContext.Initialize(GameSettings.Instance.GameMode, grid_squares_);
+        
+        Debug.Log($"ValidationContext initialized for {GameSettings.Instance.GameMode} mode");
+    }
+    
+    // Public accessor for ValidationContext (useful for UI components)
+    public ValidationContext GetValidationContext()
+    {
+        return validationContext;
+    }
+    
+    // Check if current game mode is Hell Level
+    public bool IsHellLevel()
+    {
+        return GameSettings.Instance.GameMode == EGameMode.HELL;
+    }
+    
+    private void InitializeHellLevelUI()
+    {
+        // Create Hell Level UI components only if they don't already exist
+        GameObject uiContainer = GameObject.Find("HellLevelUIContainer");
+        if (uiContainer == null)
+        {
+            uiContainer = new GameObject("HellLevelUIContainer");
+            uiContainer.transform.SetParent(canvas.transform, false);
+            
+            // Add RectTransform to UI container
+            RectTransform containerRect = uiContainer.AddComponent<RectTransform>();
+            containerRect.anchorMin = Vector2.zero;
+            containerRect.anchorMax = Vector2.one;
+            containerRect.offsetMin = Vector2.zero;
+            containerRect.offsetMax = Vector2.zero;
+        }
+        
+        // Initialize Hell Level Mode Indicator
+        if (GameObject.FindObjectOfType<HellLevelModeIndicator>() == null)
+        {
+            GameObject modeIndicatorObj = new GameObject("HellLevelModeIndicator");
+            modeIndicatorObj.transform.SetParent(uiContainer.transform, false);
+            modeIndicatorObj.AddComponent<HellLevelModeIndicator>();
+        }
+        
+        // Initialize Manual Validation Button
+        if (GameObject.FindObjectOfType<ManualValidationButton>() == null)
+        {
+            GameObject validationButtonObj = new GameObject("ManualValidationButton");
+            validationButtonObj.transform.SetParent(uiContainer.transform, false);
+            validationButtonObj.AddComponent<ManualValidationButton>();
+        }
+        
+        // Initialize Solution Progress Indicator
+        if (GameObject.FindObjectOfType<SolutionProgressIndicator>() == null)
+        {
+            GameObject progressIndicatorObj = new GameObject("SolutionProgressIndicator");
+            progressIndicatorObj.transform.SetParent(uiContainer.transform, false);
+            progressIndicatorObj.AddComponent<SolutionProgressIndicator>();
+        }
+        
+        // Initialize Visual Feedback Manager
+        if (GameObject.FindObjectOfType<VisualFeedbackManager>() == null)
+        {
+            GameObject feedbackManagerObj = new GameObject("VisualFeedbackManager");
+            feedbackManagerObj.transform.SetParent(uiContainer.transform, false);
+            feedbackManagerObj.AddComponent<VisualFeedbackManager>();
+        }
+        
+        Debug.Log("Hell Level UI components initialized");
+    }
+    
     #endregion
 }
 

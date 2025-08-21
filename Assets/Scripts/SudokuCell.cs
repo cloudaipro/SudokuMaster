@@ -33,7 +33,9 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
     public Color Correct_Color = Color.blue;
     public Color Wrong_Color = Color.red;
     public Color Focus_Color = Color.cyan;
-    public Color HintMode_Focus_Color = Color.cyan;   
+    public Color HintMode_Focus_Color = Color.cyan;
+    public Color Hypothesis_Color = new Color(0.8f, 0.6f, 0.2f, 1f); // Orange for hypothesis numbers
+    public Color Hypothesis_Text_Color = new Color(1f, 0.9f, 0.7f, 1f); // Light orange text   
 
     public float sizeScaleForFocus = 1.1f;
 
@@ -63,6 +65,10 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
     
     // Number Lock functionality
     private NumberLockManager lockManager;
+    
+    // Hell Level support
+    private ValidationContext validationContext;
+    private bool isHypothesisNumber = false;
 
     void Start()
     {
@@ -77,6 +83,13 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
             
         // Find NumberLockManager reference
         lockManager = FindObjectOfType<NumberLockManager>();
+        
+        // Find ValidationContext for Hell Level support
+        var sudokuBoard = FindObjectOfType<SudokuBoard>();
+        if (sudokuBoard != null)
+        {
+            validationContext = sudokuBoard.GetValidationContext();
+        }
     }
 
     private void OnEnable()
@@ -261,6 +274,7 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
         {
             Number = 0;
             Has_Wrong_value = false;
+            isHypothesisNumber = false; // Clear hypothesis state
             //SetSquareColor(Color.white);
             UpdateSquareColor();
             //SetNoteNumberValue(0);
@@ -280,22 +294,84 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
             {
                 if (IsCorrectNumberSet())
                     return;
-                //SetNoteNumberValue(0);
+                
                 GameEvents.willSetNumberMethod(Cell_index, number);
                 SetNumber(number);
-                if (number == Correct_number)
+                
+                // Use ValidationContext if available, otherwise use traditional logic
+                if (validationContext != null && validationContext.IsInitialized)
                 {
-                    Has_Wrong_value = false;
-                    ClearupAllNotes();
-                    GameEvents.didSetNumberMethod(Cell_index);
-                    GameEvents.OnNumberUsedMethod(number);
-                    GameEvents.CheckBoardCompletedMethod();
+                    // Process move through ValidationContext (Strategy Pattern)
+                    ValidationResult result = validationContext.ProcessMove(Cell_index, number);
+                    
+                    // Handle result based on strategy
+                    if (validationContext.IsHellLevel)
+                    {
+                        // Hell Level: Mark as hypothesis number
+                        isHypothesisNumber = true;
+                        Has_Wrong_value = false; // Don't mark as wrong in hypothesis mode
+                        
+                        // Don't clear notes or trigger completion in hypothesis mode
+                        // Visual feedback will distinguish hypothesis vs confirmed numbers
+                    }
+                    else if (result.Message == "Legacy validation active")
+                    {
+                        // ValidationContext not fully initialized - use legacy logic
+                        if (number == Correct_number)
+                        {
+                            Has_Wrong_value = false;
+                            isHypothesisNumber = false;
+                            ClearupAllNotes();
+                            GameEvents.didSetNumberMethod(Cell_index);
+                            GameEvents.OnNumberUsedMethod(number);
+                            GameEvents.CheckBoardCompletedMethod();
+                        }
+                        else
+                        {
+                            Has_Wrong_value = true;
+                            isHypothesisNumber = false;
+                            GameEvents.OnWrongNumberMethod();
+                        }
+                    }
+                    else
+                    {
+                        // Normal levels: Use immediate validation result
+                        if (result.Type == ValidationResultType.Success)
+                        {
+                            Has_Wrong_value = false;
+                            isHypothesisNumber = false;
+                            ClearupAllNotes();
+                            GameEvents.didSetNumberMethod(Cell_index);
+                            GameEvents.OnNumberUsedMethod(number);
+                            GameEvents.CheckBoardCompletedMethod();
+                        }
+                        else
+                        {
+                            Has_Wrong_value = true;
+                            isHypothesisNumber = false;
+                            GameEvents.OnWrongNumberMethod();
+                        }
+                    }
                 }
                 else
-                {                    
-                    Has_Wrong_value = true;
-                    GameEvents.OnWrongNumberMethod();
-                }                
+                {
+                    // Fallback to original logic when ValidationContext is not available
+                    if (number == Correct_number)
+                    {
+                        Has_Wrong_value = false;
+                        isHypothesisNumber = false;
+                        ClearupAllNotes();
+                        GameEvents.didSetNumberMethod(Cell_index);
+                        GameEvents.OnNumberUsedMethod(number);
+                        GameEvents.CheckBoardCompletedMethod();
+                    }
+                    else
+                    {                    
+                        Has_Wrong_value = true;
+                        isHypothesisNumber = false;
+                        GameEvents.OnWrongNumberMethod();
+                    }
+                }
             }            
         }
         UpdateSquareColor();
@@ -326,6 +402,9 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
             colors.disabledColor = (bHintMode) ? (bHilightedCellInHintMode) ? HintMode_Focus_Color : HintMode_Indicated_Color
                                                : Indicated_Color;
         }
+        else if (isHypothesisNumber && Number != 0) {
+            colors.disabledColor = Hypothesis_Color; // Orange background for hypothesis numbers
+        }
         this.colors = colors;
 
         // note color
@@ -349,6 +428,8 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
             {
                 if (Has_default_value)
                     forground_color = Default_Color;
+                else if (isHypothesisNumber)
+                    forground_color = Hypothesis_Text_Color; // Orange text for hypothesis numbers
                 else if (Has_Wrong_value)
                     forground_color = Wrong_Color;
                 else
@@ -501,6 +582,40 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
             BottomLine.SetActive(false);
             LeftLine.SetActive(false);
             RightLine.SetActive(false);
+        }
+    }
+    
+    // Hell Level support methods
+    public bool IsHypothesisNumber() 
+    {
+        return isHypothesisNumber && Number != 0;
+    }
+    
+    public void SetAsHypothesis(bool hypothesis)
+    {
+        isHypothesisNumber = hypothesis && Number != 0;
+        UpdateSquareColor();
+    }
+    
+    public void ConfirmHypothesis()
+    {
+        if (isHypothesisNumber && Number == Correct_number)
+        {
+            isHypothesisNumber = false;
+            Has_Wrong_value = false;
+            UpdateSquareColor();
+        }
+    }
+    
+    public void ResetHypothesis()
+    {
+        if (isHypothesisNumber && !Has_default_value)
+        {
+            Number = 0;
+            isHypothesisNumber = false;
+            Has_Wrong_value = false;
+            DisplayText();
+            UpdateSquareColor();
         }
     }
 

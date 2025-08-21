@@ -5,42 +5,6 @@ using Newtonsoft.Json;
 using UnityEngine;
 using static GNPXcore.NuPz_Win;
 
-public class SudokuEasyData : MonoBehaviour {
-    public static List<SudokuData.SudokuBoardData> getData()
-    {
-        var data = new List<SudokuData.SudokuBoardData>();
-        data.Add(
-            new SudokuData.SudokuBoardData(
-                new int[81] { 9, 0, 4, 0, 0, 5, 0, 0, 2, 2, 5, 0, 3, 8, 4, 1, 6, 0, 0, 8, 1, 0, 2, 0, 0, 0, 4, 0, 0, 0, 6, 5, 0, 2, 3, 7, 7, 2, 8, 0, 1, 3, 0, 0, 0, 5, 3, 0, 2, 0, 7, 0, 4, 0, 6, 7, 3, 0, 4, 0, 9, 1, 0, 0, 1, 2, 5, 0, 0, 6, 0, 8, 0, 9, 5, 7, 6, 0, 4, 0, 0 },
-                new int[81] { 9, 6, 4, 1, 7, 5, 3, 8, 2, 2, 5, 7, 3, 8, 4, 1, 6, 9, 3, 8, 1, 9, 2, 6, 7, 5, 4, 1, 4, 9, 6, 5, 8, 2, 3, 7, 7, 2, 8, 4, 1, 3, 5, 9, 6, 5, 3, 6, 2, 9, 7, 8, 4, 1, 6, 7, 3, 8, 4, 2, 9, 1, 5, 4, 1, 2, 5, 3, 9, 6, 7, 8, 8, 9, 5, 7, 6, 1, 4, 2, 3 })
-            /*
-            new SudokuData.SudokuBoardData(
-new int[81]{ 0, 2, 3, 0, 0, 0, 8, 0, 0, 4, 0, 6, 0, 8, 0, 0, 7, 0, 7, 8, 0, 3, 0, 0, 5, 0, 2, 0, 0, 7, 0, 0, 8, 2, 0, 0, 0, 6, 0, 0, 2, 0, 7, 0, 0, 0, 0, 0, 6, 5, 0, 0, 8, 4, 6, 0, 2, 5, 9, 0, 4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 5, 7, 0, 0, 5, 0, 0, 1, 0, 2, 0 },
-new int[81]{ 1, 2, 3, 7, 4, 5, 8, 9, 6, 4, 5, 6, 9, 8, 2, 1, 7, 3, 7, 8, 9, 3, 1, 6, 5, 4, 2, 5, 9, 7, 4, 3, 8, 2, 6, 1, 8, 6, 4, 1, 2, 9, 7, 3, 5, 2, 3, 1, 6, 5, 7, 9, 8, 4, 6, 7, 2, 5, 9, 3, 4, 1, 8, 9, 1, 8, 2, 6, 4, 3, 5, 7, 3, 4, 5, 8, 7, 1, 6, 2, 9 })
-            */
-);
-        return data;
-    }
-}
-public class SudokuMediumData : MonoBehaviour {
-    public static List<SudokuData.SudokuBoardData> getData()
-    {
-        return SudokuData.Instance.LoadDatasetFromFile("Medium");
-    }
-}
-public class SudokuHardData : MonoBehaviour {
-    public static List<SudokuData.SudokuBoardData> getData()
-    {
-        return SudokuData.Instance.LoadDatasetFromFile("Hard");
-    }
-}
-public class SudokuVeryHardData : MonoBehaviour {
-    public static List<SudokuData.SudokuBoardData> getData()
-    {
-        return SudokuData.Instance.LoadDatasetFromFile("Extreme");
-    }
-}
-
 
 
 public class SudokuData : MonoBehaviour
@@ -130,6 +94,7 @@ public class SudokuData : MonoBehaviour
                 "medium" => Setting.Instance.MediumLevel,
                 "hard" => Setting.Instance.HardLevel,
                 "extreme" => Setting.Instance.ExtremeLevel,
+                "hell" => Setting.Instance.HellLevel,
                 _ => 0
             };
             iLevel = ((int)((iLevel - 1) / 3)) + 1;

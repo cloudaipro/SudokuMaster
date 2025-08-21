@@ -11,5 +11,7 @@ using System.ComponentModel;
     [Description("Hard")]
     HARD,
     [Description("Extreme")]
-    EXTREME
+    EXTREME,
+    [Description("Hell")]
+    HELL
 }

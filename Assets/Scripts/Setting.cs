@@ -32,9 +32,11 @@ public class Setting
     public int MediumLevel { get; set; } = 1;
     public int HardLevel { get; set; } = 1;
     public int ExtremeLevel { get; set; } = 1;
+    public int HellLevel { get; set; } = 1;
     public string LastDateOfMediumLevel { get; set; } = "";
     public string LastDateOfHardLevel { get; set; } = "";
     public string LastDateOfExtremeLevel { get; set; } = "";
+    public string LastDateOfHellLevel { get; set; } = "";
 
 
     public static Setting LoadSetting()

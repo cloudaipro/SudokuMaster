@@ -106,7 +106,7 @@ public class NumberLockVisualFeedback : MonoBehaviour
         
         Text numberText = textObj.AddComponent<Text>();
         numberText.text = number.ToString();
-        numberText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        numberText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         numberText.fontSize = 80;
         numberText.color = Color.black;
         numberText.alignment = TextAnchor.MiddleCenter;
