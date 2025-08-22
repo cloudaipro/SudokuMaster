@@ -87,6 +87,13 @@ public class NumberLockManager : MonoBehaviour
     
     public void LockNumber(int number, NumberButton button)
     {
+        // Check if this is Hell Level - Fast Notes (Number Lock) are disabled
+        if (sudokuBoard != null && sudokuBoard.IsHellLevel())
+        {
+            Debug.Log("Fast Notes (Number Lock) are disabled in Hell Level");
+            return;
+        }
+        
         // Unlock previous number if any
         UnlockNumber();
         

@@ -2231,6 +2231,40 @@ public class SudokuBoard : MonoBehaviour
             feedbackManagerObj.AddComponent<VisualFeedbackManager>();
         }
         
+        // Initialize Hell Level Introduction Modal
+        if (GameObject.FindObjectOfType<HellLevelIntroModal>() == null)
+        {
+            GameObject introModalObj = new GameObject("HellLevelIntroModal");
+            introModalObj.transform.SetParent(uiContainer.transform, false);
+            introModalObj.AddComponent<HellLevelIntroModal>();
+        }
+        
+        // Initialize Hell Level Tutorial
+        if (GameObject.FindObjectOfType<HellLevelTutorial>() == null)
+        {
+            GameObject tutorialObj = new GameObject("HellLevelTutorial");
+            tutorialObj.transform.SetParent(uiContainer.transform, false);
+            tutorialObj.AddComponent<HellLevelTutorial>();
+        }
+        
+        // Initialize Performance Optimizer
+        if (GameObject.FindObjectOfType<HellLevelPerformanceOptimizer>() == null)
+        {
+            GameObject optimizerObj = new GameObject("HellLevelPerformanceOptimizer");
+            optimizerObj.transform.SetParent(uiContainer.transform, false);
+            optimizerObj.AddComponent<HellLevelPerformanceOptimizer>();
+        }
+        
+        // Initialize Testing Suite (only in development/debug builds)
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (GameObject.FindObjectOfType<HellLevelTestingSuite>() == null)
+        {
+            GameObject testingObj = new GameObject("HellLevelTestingSuite");
+            testingObj.transform.SetParent(uiContainer.transform, false);
+            testingObj.AddComponent<HellLevelTestingSuite>();
+        }
+        #endif
+        
         Debug.Log("Hell Level UI components initialized");
     }
     

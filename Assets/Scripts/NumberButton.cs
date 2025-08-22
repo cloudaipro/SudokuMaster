@@ -101,6 +101,16 @@ public class NumberButton : MonoBehaviour, IPointerClickHandler, IPointerDownHan
     {
         if (!buttonEnabled) return;
 
+        // Check if this is Hell Level - disable Number Lock (Fast Notes)
+        var sudokuBoard = FindObjectOfType<SudokuBoard>();
+        if (sudokuBoard != null && sudokuBoard.IsHellLevel())
+        {
+            // In Hell Level, skip hold detection and just process as normal click
+            isHolding = false;
+            holdCompleted = false;
+            return;
+        }
+
         // Start transition first, then wait for completion before starting hold detection
         isHolding = true;
         holdCompleted = false;

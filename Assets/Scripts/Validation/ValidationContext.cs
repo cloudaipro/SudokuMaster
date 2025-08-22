@@ -10,6 +10,8 @@ public class ValidationContext : MonoBehaviour
     private IValidationStrategy currentStrategy;
     private SudokuBoard sudokuBoard;
     private List<GameObject> gridSquares;
+    private Dictionary<int, SudokuCell> cellCache; // Performance optimization
+    private bool isDirty = true;
     
     // Strategy instances (cached for performance)
     private ImmediateValidationStrategy immediateStrategy;
@@ -40,6 +42,9 @@ public class ValidationContext : MonoBehaviour
             Debug.LogError("ValidationContext: Invalid grid squares provided!");
             return;
         }
+        
+        // Initialize cell cache for performance
+        InitializeCellCache();
         
         // Create strategy instances
         immediateStrategy = new ImmediateValidationStrategy(sudokuBoard, gridSquares);
@@ -153,10 +158,63 @@ public class ValidationContext : MonoBehaviour
         }
     }
     
+    // Performance optimization methods
+    private void InitializeCellCache()
+    {
+        cellCache = new Dictionary<int, SudokuCell>();
+        
+        if (gridSquares != null)
+        {
+            foreach (var square in gridSquares)
+            {
+                var cell = square.GetComponent<SudokuCell>();
+                if (cell != null)
+                {
+                    cellCache[cell.Cell_index] = cell;
+                }
+            }
+        }
+        
+        isDirty = false;
+    }
+    
+    public SudokuCell GetCellFast(int cellIndex)
+    {
+        if (isDirty)
+        {
+            InitializeCellCache();
+        }
+        
+        cellCache.TryGetValue(cellIndex, out SudokuCell cell);
+        return cell;
+    }
+    
+    public void MarkCacheDirty()
+    {
+        isDirty = true;
+    }
+    
+    // Batch validation for better performance
+    public void BatchProcessCellChanges(List<int> cellIndices)
+    {
+        if (currentStrategy == null || cellIndices == null || cellIndices.Count == 0)
+            return;
+        
+        foreach (int cellIndex in cellIndices)
+        {
+            var cell = GetCellFast(cellIndex);
+            if (cell != null)
+            {
+                currentStrategy.OnNumberPlaced(cellIndex, cell.Number);
+            }
+        }
+    }
+    
     // Public accessors for debugging
     public EGameMode CurrentGameMode => currentGameMode;
     public bool IsInitialized => isInitialized;
     public string CurrentStrategyName => currentStrategy?.GetType().Name ?? "None";
+    public int CachedCellCount => cellCache?.Count ?? 0;
     
     // Reset validation context (useful for new games)
     public void ResetValidation()

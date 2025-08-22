@@ -30,6 +30,14 @@ public class HintButton : Selectable, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        // Check if this is Hell Level - hints are disabled
+        var sudokuBoard = FindObjectOfType<SudokuBoard>();
+        if (sudokuBoard != null && sudokuBoard.IsHellLevel())
+        {
+            Debug.Log("Hints are disabled in Hell Level");
+            return;
+        }
+        
         if (Setting.Instance.RemainHints <= 0)
             //AdManager.Instance.ShowHintRewardAd();
             moreHintDialog.SetActive(true);
@@ -67,7 +75,63 @@ public class HintButton : Selectable, IPointerClickHandler
     }
     private void OnUpdateHintBadge()
     {
-        textBadge.GetComponent<Text>().text = Setting.Instance.RemainHints.ToString();
+        // Check if this is Hell Level - show disabled state
+        var sudokuBoard = FindObjectOfType<SudokuBoard>();
+        bool isHellLevel = sudokuBoard != null && sudokuBoard.IsHellLevel();
+        
+        if (isHellLevel)
+        {
+            // Update text badge safely
+            if (textBadge != null)
+            {
+                var textComponent = textBadge.GetComponent<Text>();
+                if (textComponent != null)
+                {
+                    textComponent.text = "X";
+                }
+            }
+            
+            // Update button interactability safely
+            var button = gameObject.GetComponent<Button>();
+            if (button != null)
+            {
+                button.interactable = false;
+            }
+            
+            // Change color to indicate disabled state
+            var buttonImage = gameObject.GetComponent<Image>();
+            if (buttonImage != null)
+            {
+                buttonImage.color = new Color(0.5f, 0.5f, 0.5f, 0.7f); // Grayed out
+            }
+        }
+        else
+        {
+            // Update text badge safely
+            if (textBadge != null)
+            {
+                var textComponent = textBadge.GetComponent<Text>();
+                if (textComponent != null)
+                {
+                    textComponent.text = Setting.Instance.RemainHints.ToString();
+                }
+            }
+            
+            // Update button interactability safely
+            var button = gameObject.GetComponent<Button>();
+            if (button != null)
+            {
+                button.interactable = true;
+            }
+            
+            // Restore normal color
+            var buttonImage = gameObject.GetComponent<Image>();
+            if (buttonImage != null)
+            {
+                buttonImage.color = Color.white; // Normal state
+            }
+        }
+        
         //playAd.SetActive(Setting.Instance.RemainHint <= 0);
         //hintBadge.SetActive(Setting.Instance.RemainHint > 0);
     }
