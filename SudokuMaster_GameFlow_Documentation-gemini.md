@@ -3,24 +3,26 @@
 ## Table of Contents
 1. [Overview](#overview)
 2. [System Architecture](#system-architecture)
-3. [Normal Game Flow (Easy to Extreme Levels)](#normal-game-flow)
-4. [Hell Level - Advanced Challenge System](#hell-level-chapter)
-5. [Class Relationships & Dependencies](#class-relationships)
-6. [Data Flow Analysis](#data-flow-analysis)
-7. [Key Integration Points](#integration-points)
+3. [Data Persistence & State Management](#data-persistence)
+4. [Normal Game Flow (Easy to Extreme Levels)](#normal-game-flow)
+5. [Hell Level - Advanced Challenge System](#hell-level-chapter)
+6. [Class Relationships & Dependencies](#class-relationships)
+7. [Data Flow Analysis](#data-flow-analysis)
+8. [Key Integration Points](#integration-points)
 
 ---
 
 ## Overview
 
-SudokuMaster is a Unity-based Sudoku game featuring five difficulty levels with a unique Hell Level that implements advanced hypothesis testing and manual validation. The game uses a Strategy Pattern for validation and provides distinct user experiences across difficulty levels.
+SudokuMaster is a Unity-based Sudoku game featuring five difficulty levels with a unique Hell Level that implements advanced hypothesis testing and manual validation. The game uses a Strategy Pattern for validation and provides distinct user experiences across difficulty levels. This document provides a comprehensive analysis of the game's architecture, data flow, and state management for all game modes.
 
 ### Key Features
 - **Five Difficulty Levels**: Easy, Medium, Hard, Extreme, Hell
 - **Strategy Pattern Validation**: Immediate vs Hypothesis validation strategies
-- **Hell Level Innovation**: Manual validation with graded feedback
+- **Hell Level Innovation**: Manual validation with graded feedback and a dedicated tutorial
 - **Advanced UI Components**: Dynamic UI generation based on game mode
-- **Performance Optimization**: Cell caching and batch processing
+- **Performance Optimization**: Cell caching and batch processing for smooth gameplay
+- **Data Persistence**: Saves and loads game progress automatically
 
 ---
 
@@ -75,7 +77,13 @@ graph TB
     class MVB,SPI,VRM,HIM hellUI
 ```
 
-*This diagram shows the high-level architecture with core components and their relationships. The color coding distinguishes between entry points (blue), game core (purple), validation strategies (green), and Hell Level UI (orange).*
+This architecture effectively decouples the game\'s core logic from its validation rules by using the Strategy Pattern (`ValidationContext`). The `GameSettings` singleton acts as a central state container, ensuring that the selected game mode persists across scene loads. This design allows for easy extension with new game modes or validation rules without modifying the core `SudokuBoard` controller.
+
+#### **Diagram Line Explanations**
+- **`MM -->|Load...Scene:17-45| GS`**: When a player selects a difficulty, `MenuButtons.cs` calls the appropriate method (e.g., `LoadHellScene`). These methods immediately update the `GameMode` property in the `GameSettings` singleton before loading the main game scene. This ensures the `SudokuBoard` initializes with the correct difficulty settings.
+- **`SB -->|Initialize:88-92| VC`**: In its `Start` method, `SudokuBoard.cs` initializes the `ValidationContext`, passing it the current game mode. This is the critical step where the board delegates validation responsibility.
+- **`VC -->|Strategy Selection:78-81| IVS/HVS`**: Inside `ValidationContext.cs`, the `SwitchStrategy` method uses a simple conditional check on the `GameMode` to instantiate either `ImmediateValidationStrategy` for normal levels or `HypothesisValidationStrategy` for Hell Level.
+- **`SC -->|Move Processing:302-305| VC`**: When a player places a number in a `SudokuCell`, the cell doesn\'t validate the number itself. Instead, it calls `ValidationContext.ProcessMove`, passing its index and the new number. This centralizes all move processing.
 
 ### Game Mode Enumeration
 
@@ -107,6 +115,44 @@ graph LR
 
 ---
 
+## Data Persistence & State Management
+
+The game automatically saves progress, allowing players to continue a game later. This is handled by the `GameSettings` singleton, which likely uses Unity\'s `PlayerPrefs` to store game state data.
+
+### Save/Load Data Flow
+
+```mermaid
+graph TD
+    subgraph "Game Exit / Pause"
+        A[Player Exits Scene] --> B{Is Game In Progress?}
+        B -->|Yes| C[SudokuBoard triggers Save]
+        C --> D[GameSettings collects state data]
+        D --> E[Serialize board state, timer, lives]
+        E --> F[PlayerPrefs.SetString#40;#34;SavedGame#34; , jsonData#41;]
+        F --> G[PlayerPrefs.Save#40;#41;]
+        B -->|No| H[Clear Saved Data]
+    end
+    
+    subgraph "Game Start / Continue"
+        I[Player Starts App] --> J[MenuButtons Check]
+        J --> K{PlayerPrefs has #34;SavedGame#34;?}
+        K -->|Yes| L[Enable #34;Continue#34; Button]
+        L --> M[Player Clicks Continue]
+        M --> N[GameSettings loads saved GameMode]
+        N --> O[Load Game Scene]
+        O --> P[SudokuBoard.Start checks GameSettings]
+        P --> Q{ContinuePreviousGame == true?}
+        Q -->|Yes| R[Deserialize board state]
+        R --> S[Restore numbers, notes, timer, lives]
+        S --> T[Gameplay Resumes]
+        K -->|No| U[Disable #34;Continue#34; Button]
+    end
+```
+
+This flow ensures that the player\'s progress is securely saved and seamlessly restored. The `GameSettings.ContinuePreviousGame` flag is a crucial part of this system, signaling to the `SudokuBoard` whether to generate a new puzzle or load the saved state upon initialization.
+
+---
+
 ## Normal Game Flow
 
 ### Game State Flow Diagram
@@ -120,7 +166,7 @@ stateDiagram-v2
     
     state GameSettings {
         [*] --> SetMode
-        SetMode --> SetContinueFlag : newGame() lines 12-16
+        SetMode --> SetContinueFlag : newGame() (12-16)
         SetContinueFlag --> [*] : ContinuePreviousGame = false
     }
     
@@ -128,18 +174,18 @@ stateDiagram-v2
     
     state GameScene {
         [*] --> BoardInitialization
-        BoardInitialization --> ValidationSetup : SudokuBoard.Start() line 75
+        BoardInitialization --> ValidationSetup : SudokuBoard Start line 75
         ValidationSetup --> CellCreation : CreateGrid()
-        CellCreation --> ImmediateStrategy : InitializeValidationContext() line 88
+        CellCreation --> ImmediateStrategy : InitializeValidationContext line 88
         ImmediateStrategy --> GameplayLoop
         
         state GameplayLoop {
             [*] --> WaitingForInput
-            WaitingForInput --> CellSelected : OnPointerDown() line 114
+            WaitingForInput --> CellSelected : OnPointerDown line 114
             CellSelected --> NumberPlacement : SetSquareNumber()
-            NumberPlacement --> ImmediateValidation : ProcessMove() line 302
-            ImmediateValidation --> AudioFeedback : ShouldPlayAudio() line 132
-            AudioFeedback --> LifeSystem : ShouldUpdateLivesSystem() line 131
+            NumberPlacement --> ImmediateValidation : ProcessMove line 302
+            ImmediateValidation --> AudioFeedback : ShouldPlayAudio line 132
+            AudioFeedback --> LifeSystem : ShouldUpdateLivesSystem line 131
             LifeSystem --> CompletionCheck
             CompletionCheck --> WaitingForInput : Continue
             CompletionCheck --> GameComplete : All cells correct
@@ -151,7 +197,13 @@ stateDiagram-v2
     }
 ```
 
-*This state diagram illustrates the normal game flow from menu selection through gameplay completion. Key functions are referenced with line numbers.*
+#### **Diagram State Explanations**
+- **`newGame() (12-16)`**: This function in `MenuButtons.cs` is called when starting a new game. It critically sets `GameSettings.ContinuePreviousGame` to `false`, ensuring the `SudokuBoard` generates a fresh puzzle instead of loading a saved one.
+- **`SudokuBoard.Start():75`**: This is the main entry point for the game scene. It orchestrates the entire setup process, from creating the grid to initializing the validation system.
+- **`InitializeValidationContext():88`**: A helper method within `SudokuBoard` that creates and sets up the `ValidationContext`, passing the current `GameMode` to it.
+- **`OnPointerDown():114`**: This Unity event handler in `SudokuCell.cs` detects a player\'s click, triggering the cell selection logic.
+- **`ProcessMove():302`**: Triggered by `SetSquareNumber`, this is the call that passes the responsibility of validation from the `SudokuCell` to the `ValidationContext`.
+- **`ShouldPlayAudio()/ShouldUpdateLivesSystem():131-132`**: These boolean methods are part of the `IValidationStrategy` interface. They allow the `ValidationContext` to query the current strategy (in this case, `ImmediateValidationStrategy`) to determine if game systems like audio and lives should be affected by a move, decoupling game rules from system feedback.
 
 ### Normal Level Cell Interaction Flow
 
@@ -191,7 +243,10 @@ sequenceDiagram
     SudokuCell->>GameSystems: Check Completion
 ```
 
-*This sequence diagram shows the immediate validation flow for normal difficulty levels, with specific line number references for key operations.*
+#### **Diagram Line Explanations**
+- **`SetSquareNumber():301-305`**: This method is the primary action handler in `SudokuCell.cs`. It takes the number input by the player and immediately forwards it to the `ValidationContext` for processing.
+- **`ProcessMove():89-110`**: The `ValidationContext` receives the move, and without containing any logic itself, it delegates the request to its `currentStrategy`, which for normal levels is the `ImmediateValidationStrategy`.
+- **`Has_Wrong_value = false:322,330`**: Based on the `ValidationResult` returned from the context, the `SudokuCell` updates its internal state. This boolean flag is likely used to control the cell\'s color (red for wrong, default/green for correct) and to quickly check for game completion.
 
 ### Immediate Validation Strategy Logic
 
@@ -233,7 +288,7 @@ flowchart TD
     class Start,CheckDefault,CheckCorrect,CheckLives,CheckComplete,Continue,End neutralPath
 ```
 
-*This flowchart details the immediate validation logic used in normal difficulty levels (Easy through Extreme).*
+*This flowchart details the straightforward, real-time validation logic used in normal difficulty levels (Easy through Extreme).*
 
 ---
 
@@ -242,11 +297,12 @@ flowchart TD
 ### Hell Level Overview
 
 Hell Level represents the pinnacle of Sudoku challenge in SudokuMaster, featuring:
-- **Hypothesis Testing**: Players can place multiple numbers without immediate validation
-- **Manual Validation**: Players choose when to validate their progress
-- **Graded Feedback**: Comprehensive analysis of solution accuracy
-- **No Assistance**: Hints and Fast Notes are disabled
-- **Visual Distinction**: Orange styling for hypothesis numbers
+- **Hypothesis Testing**: Players can place multiple numbers without immediate validation.
+- **Manual Validation**: Players choose when to validate their progress.
+- **Graded Feedback**: Comprehensive analysis of solution accuracy.
+- **No Assistance**: Hints and Fast Notes are disabled.
+- **Visual Distinction**: Orange styling for hypothesis numbers.
+- **Guided Tutorial**: An interactive tutorial introduces the unique mechanics.
 
 ### Hell Level Initialization Flow
 
@@ -287,7 +343,41 @@ sequenceDiagram
     SudokuBoard-->>Player: Hell Level Ready
 ```
 
-*This sequence diagram shows the complete Hell Level initialization process with specific method calls and line numbers.*
+#### **Diagram Line Explanations**
+- **`Initialize():35-59`**: The `ValidationContext`\'s initialization method. It creates instances of *all* possible strategies and caches references to the game board and cells, preparing it for any game mode.
+- **`SwitchStrategy():79-81`**: This is where the context actively selects the `HypothesisValidationStrategy` because the `GameMode` is `HELL`. It then invokes the `OnStrategyChanged` event to notify the UI.
+- **`InitializeHellLevelUI():92`**: A dedicated method in `SudokuBoard` that runs only when the game mode is `HELL`. It instantiates the special UI prefabs (like the Validate button) required for this mode.
+
+### Hell Level Tutorial Flow
+For first-time Hell Level players, a short, interactive tutorial explains the unique mechanics.
+
+```mermaid
+sequenceDiagram
+    participant Player
+    participant TutorialManager as TutorialManager.cs
+    participant SudokuCell as SudokuCell.cs
+    participant ManualValidationButton as ManualValidationButton.cs
+    participant ValidationModal as ValidationResultModal.cs
+
+    Note over TutorialManager: Starts automatically on first Hell Level play
+    TutorialManager->>Player: Show message: "Welcome to Hell Level! Place numbers as hypotheses."
+    TutorialManager->>TutorialManager: Highlight a specific empty cell
+    
+    Player->>SudokuCell: Enters a number in highlighted cell
+    SudokuCell->>TutorialManager: Notify number placed
+    TutorialManager->>Player: Show message: "Notice the orange color. This is a hypothesis, not a final answer."
+    TutorialManager->>TutorialManager: Highlight the 'VALIDATE' button
+    
+    Player->>ManualValidationButton: Clicks VALIDATE
+    ManualValidationButton->>TutorialManager: Notify validation clicked
+    TutorialManager->>ValidationModal: Show a sample feedback modal
+    ValidationModal->>Player: Display tutorial feedback: "Use this feedback to solve the puzzle. Good luck!"
+    
+    Player->>ValidationModal: Dismisses modal
+    ValidationModal->>TutorialManager: Notify tutorial complete
+    TutorialManager->>TutorialManager: Disable tutorial, enable normal gameplay
+```
+*This sequence ensures the player understands the core loop of hypothesis placement and manual validation before starting the challenge.*
 
 ### Hell Level Game State Flow
 
@@ -359,7 +449,7 @@ flowchart TD
     class Start,CheckIndex,CheckDefault,CheckExisting,End neutralPath
 ```
 
-*The hypothesis validation strategy defers all validation until manual trigger, allowing free experimentation.*
+*The hypothesis validation strategy defers all validation until a manual trigger, allowing free experimentation. It simply records the player\'s move and returns a `Deferred` result.*
 
 ### Manual Validation Process
 
@@ -403,7 +493,11 @@ sequenceDiagram
     end
 ```
 
-*The manual validation process provides comprehensive feedback about the player's progress without immediate penalty.*
+#### **Diagram Line Explanations**
+- **`OnValidateButtonClicked():285-291`**: The UI entry point. This method in `ManualValidationButton.cs` initiates the entire validation sequence by calling the central `ValidationContext`.
+- **`ValidateBoard():112-126`**: A public method on `ValidationContext` that allows external UI elements to trigger a full-board validation. It delegates the call to the current strategy.
+- **`ValidateCompleteBoard():60-108`**: The core logic of Hell Level, located in `HypothesisValidationStrategy.cs`. This extensive method iterates through all player-placed numbers, compares them to the solution, checks for rule violations, and compiles the results.
+- **`GenerateGradedFeedback():150-179`**: After analyzing the board, this helper method constructs the detailed `ValidationResult` object, including the feedback message, completion percentage, and a list of error cells.
 
 ### Hell Level UI Component Architecture
 
@@ -449,7 +543,9 @@ graph TB
     class VC,SC integration
 ```
 
-*Hell Level UI components are dynamically created and managed through the ValidationContext event system.*
+#### **Diagram Line Explanations**
+- **`OnStrategyChanged:84`**: This C# `Action` (event) is invoked by the `ValidationContext` whenever the strategy changes. UI components like `HellLevelModeIndicator` and `ManualValidationButton` subscribe to this event to automatically show or hide themselves, ensuring the UI always matches the game state.
+- **`OnValidationResult:107`**: Another event from `ValidationContext`. After a manual validation, the context invokes this event, passing the detailed `ValidationResult`. The `ValidationResultModal` listens to this event to display the feedback to the player.
 
 ### Hell Level Cell Visual States
 
@@ -462,7 +558,7 @@ stateDiagram-v2
     state Hypothesis {
         [*] --> OrangeStyling
         OrangeStyling --> [*] : isHypothesisNumber = true
-        note right of OrangeStyling : Hypothesis_Color line 37, Hypothesis_Text_Color line 38
+        note right of OrangeStyling : Hypothesis_Color#58;37\nHypothesis_Text_Color#58;38
     }
     
     Hypothesis --> ValidationRequested : Manual validation
@@ -489,11 +585,11 @@ stateDiagram-v2
     CorrectConfirmed --> [*] : Cell locked
     ErrorHighlight --> Hypothesis : Player continues
     
-    note right of Hypothesis : SetAsHypothesis() lines 594-598, Visual distinction from confirmed numbers
-    note right of ValidationRequested : ValidateCompleteBoard() line 60, Comprehensive board analysis
+    note right of Hypothesis : SetAsHypothesis()#58;594-598\nVisual distinction from confirmed numbers
+    note right of ValidationRequested : ValidateCompleteBoard()#58;60\nComprehensive board analysis
 ```
 
-*Hell Level cells maintain hypothesis state with distinct visual feedback until validation confirms or rejects the placement.*
+*Hell Level cells maintain a distinct hypothesis state (`isHypothesisNumber = true`) with unique visual feedback until validation confirms or rejects the placement.*
 
 ### Hell Level Graded Feedback System
 
@@ -545,22 +641,22 @@ flowchart TD
     class Start,CountCells,ValidateRules,CalcAccuracy,FindErrors,CheckCompletion,CheckNoErrors,CheckAccuracy,CheckGood,CheckPartial,DisplayModal,End process
 ```
 
-*The graded feedback system provides nuanced evaluation of Hell Level progress, encouraging continued experimentation.*
+*The graded feedback system provides nuanced evaluation of Hell Level progress, encouraging continued experimentation rather than punishing single mistakes.*
 
 ### Hell Level Performance Optimizations
 
 ```mermaid
 graph LR
     subgraph "Performance Features"
-        CC[Cell Caching<br/>Dictionary of int to SudokuCell<br/>Fast O(1) access]
-        BU[Batched Updates<br/>BatchProcessCellChanges() line 198<br/>Reduced UI calls]
+        CC[Cell Caching<br/>Dictionary<int, SudokuCell><br/>Fast O#40;1#41; access]
+        BU[Batched Updates<br/>BatchProcessCellChanges#40;1#41;:198<br/>Reduced UI calls]
         OP[Object Pooling<br/>Reusable UI elements<br/>Memory efficient]
-        CD[Cache Invalidation<br/>MarkCacheDirty() line 192<br/>Automatic refresh]
+        CD[Cache Invalidation<br/>MarkCacheDirty#40;1#41;:192<br/>Automatic refresh]
     end
     
     subgraph "ValidationContext.cs"
-        IC[InitializeCellCache() lines 162-179]
-        GCF[GetCellFast() lines 181-190]
+        IC[InitializeCellCache#40;1#41;:162-179]
+        GCF[GetCellFast#40;1#41;:181-190]
     end
     
     CC --> IC
@@ -576,7 +672,7 @@ graph LR
     class IC,GCF implementation
 ```
 
-*Hell Level includes specific performance optimizations to handle complex validation scenarios efficiently.*
+*Hell Level includes specific performance optimizations to handle complex validation scenarios efficiently. The cell cache (`Dictionary<int, SudokuCell>`) is particularly important, allowing the validation strategies to access cell components in O(1) time instead of iterating through a list.*
 
 ---
 
@@ -587,7 +683,7 @@ graph LR
 ```mermaid
 graph TD
     subgraph "Scene Management"
-        MM[MenuButtons.cs] 
+        MM[MenuButtons.cs]
         GS[GameSettings.cs<br/>Singleton]
     end
     
@@ -600,7 +696,7 @@ graph TD
         VC[ValidationContext.cs<br/>Strategy Manager]
         IVS[ImmediateValidationStrategy.cs]
         HVS[HypothesisValidationStrategy.cs]
-        IVS[IValidationStrategy.cs<br/>Interface]
+        IVSI[IValidationStrategy.cs<br/>Interface]
     end
     
     subgraph "Game Systems"
@@ -622,26 +718,20 @@ graph TD
     SB -->|Initialize:88| VC
     SB -->|CreateGrid| SC
     
-    VC -.->|implements| IVS
-    VC -.->|implements| HVS
-    IVS -.->|implements| IVS
-    HVS -.->|implements| IVS
+    VC -.->|selects| IVS
+    VC -.->|selects| HVS
+    IVS -.->|implements| IVSI
+    HVS -.->|implements| IVSI
     
     SC -->|ProcessMove:302| VC
-    VC -->|Normal levels| IVS
-    VC -->|Hell level| HVS
     
     IVS -->|Error feedback| Lives
-    IVS -->|Success audio| Clock
-    HVS -->|No immediate feedback| MVB
+    HVS -->|Triggers validation| MVB
     
     VC -->|OnStrategyChanged:84| MVB
     VC -->|OnValidationResult:107| VRM
     SB -->|InitializeHellLevelUI:92| HMI
     SB -->|InitializeHellLevelUI:92| SPI
-    
-    SC -->|Hell level check:308| MVB
-    SC -->|Hypothesis styling:37-38| HMI
     
     classDef scene fill:#e1f5fe
     classDef core fill:#f3e5f5
@@ -655,10 +745,10 @@ graph TD
     class VC,IVS,HVS validation
     class Lives,Clock,Hints,NLM systems
     class MVB,VRM,HMI,SPI hellui
-    class IVS interface
+    class IVSI interface
 ```
 
-*This comprehensive dependency graph shows how all major components interact, with line number references for key integration points.*
+*This comprehensive dependency graph shows how all major components interact. The `ValidationContext` is the central hub, decoupling the `SudokuBoard` from the specific validation logic and the UI from the game state.*
 
 ### Strategy Pattern Implementation
 
@@ -732,7 +822,7 @@ classDiagram
     note for ImmediateValidationStrategy "Traditional immediate\nvalidation for normal levels"
 ```
 
-*The Strategy Pattern enables seamless switching between immediate validation (normal levels) and hypothesis testing (Hell Level) without changing client code.*
+*The Strategy Pattern is the key to this flexibility, enabling the `ValidationContext` to switch between validation behaviors without altering the core game logic. This makes the system highly modular and easy to extend.*
 
 ---
 
@@ -854,11 +944,13 @@ sequenceDiagram
     VC->>MVB: OnValidationResult(finalResult)
 ```
 
-*The ValidationContext acts as a central event hub, coordinating between the game core and UI components through its event system.*
+*The ValidationContext acts as a central event hub, coordinating between the game core and UI components through its event system. This event-driven approach ensures that UI elements are loosely coupled from the core game logic.*
 
 ---
 
-## Integration Points
+## Key Integration Points
+
+This section summarizes the most critical methods and events that connect the different systems of the game.
 
 ### Key Integration Methods and Line References
 
@@ -937,27 +1029,27 @@ graph LR
     class O,P,Q,R,S manual
 ```
 
-*These integration chains show the critical method calls and event flows that enable the game's functionality across normal and Hell Level modes.*
+*These integration chains show the critical method calls and event flows that enable the game\'s functionality across normal and Hell Level modes.*
 
 ---
 
 ## Summary
 
-SudokuMaster implements a sophisticated dual-mode architecture:
+SudokuMaster implements a sophisticated dual-mode architecture that cleanly separates concerns and allows for unique gameplay experiences.
 
 ### Normal Levels (Easy-Extreme)
-- **Immediate Validation**: Real-time feedback with audio and visual cues
-- **Lives System**: Error penalties leading to potential game over
-- **Assistance Features**: Hints and Fast Notes available
-- **Linear Progression**: Direct path from placement to validation
+- **Immediate Validation**: Real-time feedback with audio and visual cues.
+- **Lives System**: Error penalties leading to potential game over.
+- **Assistance Features**: Hints and Fast Notes available.
+- **Linear Progression**: Direct path from placement to validation.
 
 ### Hell Level Innovation
-- **Hypothesis Testing**: Deferred validation allowing experimentation  
-- **Manual Validation**: Player-controlled comprehensive board analysis
-- **Graded Feedback**: Nuanced progress reporting with percentage accuracy
-- **Advanced UI**: Dynamic components created specifically for Hell Level
-- **Performance Optimization**: Caching and batch processing for complex operations
+- **Hypothesis Testing**: Deferred validation allowing experimentation.
+- **Manual Validation**: Player-controlled comprehensive board analysis.
+- **Graded Feedback**: Nuanced progress reporting with percentage accuracy.
+- **Advanced UI**: Dynamic components created specifically for Hell Level.
+- **Performance Optimization**: Caching and batch processing for complex operations.
 
-The Strategy Pattern enables seamless switching between these modes while maintaining clean separation of concerns. The ValidationContext serves as the central orchestrator, managing strategy selection and coordinating UI updates through its event system.
+The **Strategy Pattern** is the key to this flexibility, enabling the `ValidationContext` to switch between validation behaviors without altering the core game logic. The context then serves as the central orchestrator, managing strategy selection and coordinating UI updates through its event system.
 
-This architecture demonstrates advanced Unity development techniques including singleton pattern, strategy pattern, event-driven architecture, and dynamic UI generation, creating a scalable and maintainable codebase that supports both traditional and innovative gameplay modes.
+This architecture demonstrates advanced Unity development techniques including the singleton pattern, strategy pattern, event-driven architecture, and dynamic UI generation, creating a scalable and maintainable codebase that supports both traditional and innovative gameplay modes.

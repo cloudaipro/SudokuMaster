@@ -11,20 +11,95 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 12004, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: 
+  m_EditorClassIdentifier: UnityEditor.dll::UnityEditor.ContainerWindow
+  m_PixelRect:
+    serializedVersion: 2
+    x: 199
+    y: 279
+    width: 1465
+    height: 741
+  m_ShowMode: 0
+  m_Title: Build Profiles
+  m_RootView: {fileID: 4}
+  m_MinSize: {x: 725, y: 426}
+  m_MaxSize: {x: 4000, y: 4026}
+  m_Maximized: 0
+--- !u!114 &2
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 12004, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
   m_EditorClassIdentifier: 
   m_PixelRect:
     serializedVersion: 2
-    x: 626
-    y: 90
-    width: 2061
-    height: 1244
+    x: 1723
+    y: 61
+    width: 1709
+    height: 1293
   m_ShowMode: 4
   m_Title: Simulator
-  m_RootView: {fileID: 8}
+  m_RootView: {fileID: 11}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
   m_Maximized: 0
---- !u!114 &2
+--- !u!114 &3
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: BuildProfileWindow
+  m_EditorClassIdentifier: UnityEditor.dll::UnityEditor.DockArea
+  m_Children: []
+  m_Position:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1465
+    height: 741
+  m_MinSize: {x: 725, y: 426}
+  m_MaxSize: {x: 4000, y: 4026}
+  m_ActualView: {fileID: 17}
+  m_Panes:
+  - {fileID: 17}
+  m_Selected: 0
+  m_LastSelected: 0
+--- !u!114 &4
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 12010, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEditor.dll::UnityEditor.SplitView
+  m_Children:
+  - {fileID: 3}
+  m_Position:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1465
+    height: 741
+  m_MinSize: {x: 725, y: 426}
+  m_MaxSize: {x: 4000, y: 4026}
+  vertical: 0
+  controlID: 11237
+  draggingID: 0
+--- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -39,18 +114,18 @@ MonoBehaviour:
   m_Children: []
   m_Position:
     serializedVersion: 2
-    x: 571
+    x: 483
     y: 0
-    width: 959
-    height: 376
+    width: 788
+    height: 362
   m_MinSize: {x: 101, y: 126}
   m_MaxSize: {x: 4001, y: 4026}
-  m_ActualView: {fileID: 19}
+  m_ActualView: {fileID: 22}
   m_Panes:
-  - {fileID: 19}
+  - {fileID: 22}
   m_Selected: 0
   m_LastSelected: 0
---- !u!114 &3
+--- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -63,20 +138,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Children:
-  - {fileID: 7}
-  - {fileID: 2}
+  - {fileID: 10}
+  - {fileID: 5}
   m_Position:
     serializedVersion: 2
     x: 0
-    y: 812
-    width: 1530
-    height: 376
+    y: 875
+    width: 1271
+    height: 362
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 54
+  controlID: 104
   draggingID: 0
---- !u!114 &4
+--- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -93,17 +168,16 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 531
-    height: 1188
+    width: 438
+    height: 1237
   m_MinSize: {x: 276, y: 76}
   m_MaxSize: {x: 4001, y: 4026}
-  m_ActualView: {fileID: 16}
+  m_ActualView: {fileID: 19}
   m_Panes:
-  - {fileID: 16}
-  - {fileID: 14}
+  - {fileID: 19}
   m_Selected: 0
-  m_LastSelected: 1
---- !u!114 &5
+  m_LastSelected: 0
+--- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -116,20 +190,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Children:
-  - {fileID: 4}
-  - {fileID: 11}
+  - {fileID: 7}
+  - {fileID: 14}
   m_Position:
     serializedVersion: 2
     x: 0
     y: 36
-    width: 2061
-    height: 1188
+    width: 1709
+    height: 1237
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 19
+  controlID: 17
   draggingID: 0
---- !u!114 &6
+--- !u!114 &9
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -146,16 +220,16 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 387
-    height: 812
+    width: 315
+    height: 875
   m_MinSize: {x: 202, y: 226}
   m_MaxSize: {x: 4002, y: 4026}
-  m_ActualView: {fileID: 17}
+  m_ActualView: {fileID: 20}
   m_Panes:
-  - {fileID: 17}
+  - {fileID: 20}
   m_Selected: 0
   m_LastSelected: 0
---- !u!114 &7
+--- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -172,16 +246,16 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 571
-    height: 376
+    width: 483
+    height: 362
   m_MinSize: {x: 232, y: 276}
   m_MaxSize: {x: 10002, y: 10026}
-  m_ActualView: {fileID: 15}
+  m_ActualView: {fileID: 18}
   m_Panes:
-  - {fileID: 15}
+  - {fileID: 18}
   m_Selected: 0
   m_LastSelected: 0
---- !u!114 &8
+--- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -194,22 +268,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Children:
-  - {fileID: 9}
-  - {fileID: 5}
-  - {fileID: 10}
+  - {fileID: 12}
+  - {fileID: 8}
+  - {fileID: 13}
   m_Position:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 2061
-    height: 1244
+    width: 1709
+    height: 1293
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
   m_UseTopView: 1
   m_TopViewHeight: 36
   m_UseBottomView: 1
   m_BottomViewHeight: 20
---- !u!114 &9
+--- !u!114 &12
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -226,12 +300,12 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 2061
+    width: 1709
     height: 36
   m_MinSize: {x: 0, y: 0}
   m_MaxSize: {x: 0, y: 0}
   m_LastLoadedLayoutName: 
---- !u!114 &10
+--- !u!114 &13
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -247,12 +321,12 @@ MonoBehaviour:
   m_Position:
     serializedVersion: 2
     x: 0
-    y: 1224
-    width: 2061
+    y: 1273
+    width: 1709
     height: 20
   m_MinSize: {x: 0, y: 0}
   m_MaxSize: {x: 0, y: 0}
---- !u!114 &11
+--- !u!114 &14
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -265,20 +339,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Children:
-  - {fileID: 12}
-  - {fileID: 3}
+  - {fileID: 15}
+  - {fileID: 6}
   m_Position:
     serializedVersion: 2
-    x: 531
+    x: 438
     y: 0
-    width: 1530
-    height: 1188
+    width: 1271
+    height: 1237
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 25
+  controlID: 103
   draggingID: 0
---- !u!114 &12
+--- !u!114 &15
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -291,20 +365,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Children:
-  - {fileID: 6}
-  - {fileID: 13}
+  - {fileID: 9}
+  - {fileID: 16}
   m_Position:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 1530
-    height: 812
+    width: 1271
+    height: 875
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 26
+  controlID: 45
   draggingID: 0
---- !u!114 &13
+--- !u!114 &16
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -319,19 +393,19 @@ MonoBehaviour:
   m_Children: []
   m_Position:
     serializedVersion: 2
-    x: 387
+    x: 315
     y: 0
-    width: 1143
-    height: 812
+    width: 956
+    height: 875
   m_MinSize: {x: 201, y: 226}
   m_MaxSize: {x: 4001, y: 4026}
-  m_ActualView: {fileID: 20}
+  m_ActualView: {fileID: 23}
   m_Panes:
-  - {fileID: 18}
-  - {fileID: 20}
+  - {fileID: 21}
+  - {fileID: 23}
   m_Selected: 1
   m_LastSelected: 0
---- !u!114 &14
+--- !u!114 &17
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -340,22 +414,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ffb9ccd5681bd841ae77e9e5571f770, type: 3}
+  m_Script: {fileID: 15004, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: 
-  m_EditorClassIdentifier: 
-  m_MinSize: {x: 100, y: 100}
+  m_EditorClassIdentifier: UnityEditor.BuildProfileModule.dll::UnityEditor.Build.Profile.BuildProfileWindow
+  m_MinSize: {x: 725, y: 400}
   m_MaxSize: {x: 4000, y: 4000}
   m_TitleContent:
-    m_Text: Git for Unity
+    m_Text: Build Profiles
     m_Image: {fileID: 0}
     m_Tooltip: 
-    m_TextWithWhitespace: "Unity.VersionControl.Git.Window\u200B"
+    m_TextWithWhitespace: "Build Profiles\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 500
-    y: 94
-    width: 682
-    height: 1193
+    x: 0
+    y: 26
+    width: 1465
+    height: 715
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -367,404 +441,7 @@ MonoBehaviour:
     m_SaveData: []
     m_ContainerData: []
     m_OverlaysVisible: 1
-  progressMessageClearTime: -1
-  notificationClearTime: -1
-  timeSinceLastRotation: -1
-  currentBranchAndRemoteHasUpdate: 0
-  currentTrackingStatusHasUpdate: 0
-  currentStatusEntriesHasUpdate: 0
-  repositoryProgressHasUpdate: 1
-  appManagerProgressHasUpdate: 1
-  changeTab: 5
-  activeTab: 5
-  initProjectView:
-    hasCompletedInitialCheck: 0
-    isUserDataPresent: 0
-    lastCheckUserChangedEvent:
-      updatedTimeString: 0001-01-01T00:00:00.000+00:00
-      cacheType: 8
-  branchesView:
-    treeLocals:
-      IsRemote: 0
-      folders:
-        keys:
-        - Local branches
-        values:
-        - path: Local branches
-          label: Local branches
-          level: 0
-          isFolder: 1
-          isContainer: 0
-          isCollapsed: 0
-          isHidden: 0
-          isActive: 0
-          treeIsCheckable: 0
-          checkState: 0
-      checkedFileNodes:
-        keys: []
-        values: []
-      title: Local branches
-      pathSeparator: /
-      displayRootNode: 1
-      isSelectable: 1
-      isCheckable: 0
-      nodes:
-      - path: Local branches
-        label: Local branches
-        level: 0
-        isFolder: 1
-        isContainer: 0
-        isCollapsed: 0
-        isHidden: 0
-        isActive: 0
-        treeIsCheckable: 0
-        checkState: 0
-      selectedNode:
-        path: 
-        label: 
-        level: 0
-        isFolder: 0
-        isContainer: 0
-        isCollapsed: 0
-        isHidden: 0
-        isActive: 0
-        treeIsCheckable: 0
-        checkState: 0
-    treeRemotes:
-      IsRemote: 1
-      folders:
-        keys:
-        - Remote branches
-        values:
-        - path: Remote branches
-          label: Remote branches
-          level: 0
-          isFolder: 1
-          isContainer: 0
-          isCollapsed: 0
-          isHidden: 0
-          isActive: 0
-          treeIsCheckable: 0
-          checkState: 0
-      checkedFileNodes:
-        keys: []
-        values: []
-      title: Remote branches
-      pathSeparator: /
-      displayRootNode: 1
-      isSelectable: 1
-      isCheckable: 0
-      nodes:
-      - path: Remote branches
-        label: Remote branches
-        level: 0
-        isFolder: 1
-        isContainer: 0
-        isCollapsed: 0
-        isHidden: 0
-        isActive: 0
-        treeIsCheckable: 0
-        checkState: 0
-      selectedNode:
-        path: 
-        label: 
-        level: 0
-        isFolder: 0
-        isContainer: 0
-        isCollapsed: 0
-        isHidden: 0
-        isActive: 0
-        treeIsCheckable: 0
-        checkState: 0
-    mode: 0
-    newBranchName: 
-    scroll: {x: 0, y: 0}
-    disableDelete: 1
-    disableCreate: 1
-    lastLocalAndRemoteBranchListChangedEvent:
-      updatedTimeString: 0001-01-01T00:00:00.000+00:00
-      cacheType: 2
-    lastCurrentBranchAndRemoteChange:
-      updatedTimeString: 0001-01-01T00:00:00.000+00:00
-      cacheType: 1
-    currentBranch:
-      name: 
-      tracking: 
-    currentRemote:
-      name: 
-      url: 
-      login: 
-      user: 
-      host: 
-      function: 0
-      token: 
-    localBranches: []
-    remoteBranches: []
-  changesView:
-    currentBranchHasUpdate: 0
-    currentStatusEntriesHasUpdate: 0
-    currentLocksHasUpdate: 0
-    commitBody: 
-    commitMessage: 
-    currentBranch: 
-    treeScroll: {x: 0, y: 0}
-    treeChanges:
-      assets:
-        keys: []
-        values: []
-      folders:
-        keys: []
-        values: []
-      checkedFileNodes:
-        keys: []
-        values: []
-      title: 
-      pathSeparator: /
-      displayRootNode: 0
-      isSelectable: 1
-      isCheckable: 1
-      isUsingGlobalSelection: 1
-      nodes:
-      - path: 
-        label: 
-        level: -1
-        isFolder: 1
-        isContainer: 0
-        isCollapsed: 0
-        isHidden: 0
-        isActive: 0
-        treeIsCheckable: 1
-        checkState: 0
-        isLocked: 0
-        gitStatusEntry:
-          path: 
-          fullPath: 
-          projectPath: 
-          originalPath: 
-          indexStatus: 0
-          workTreeStatus: 0
-      selectedNode:
-        path: 
-        label: 
-        level: 0
-        isFolder: 0
-        isContainer: 0
-        isCollapsed: 0
-        isHidden: 0
-        isActive: 0
-        treeIsCheckable: 0
-        checkState: 0
-        isLocked: 0
-        gitStatusEntry:
-          path: 
-          fullPath: 
-          projectPath: 
-          originalPath: 
-          indexStatus: 0
-          workTreeStatus: 0
-    gitStatusEntries: []
-    changedFilesText: No changed files
-    lastCurrentBranchChangedEvent:
-      updatedTimeString: 0001-01-01T00:00:00.000+00:00
-      cacheType: 1
-    lastStatusEntriesChangedEvent:
-      updatedTimeString: 0001-01-01T00:00:00.000+00:00
-      cacheType: 6
-    lastLocksChangedEvent:
-      updatedTimeString: 0001-01-01T00:00:00.000+00:00
-      cacheType: 7
-  historyView:
-    currentLogHasUpdate: 0
-    currentTrackingStatusHasUpdate: 0
-    logEntries: []
-    statusAhead: 0
-    lastLogChangedEvent:
-      updatedTimeString: 0001-01-01T00:00:00.000+00:00
-      cacheType: 3
-    lastTrackingStatusChangedEvent:
-      updatedTimeString: 0001-01-01T00:00:00.000+00:00
-      cacheType: 5
-    historyControl:
-      scroll: {x: 0, y: 0}
-      entries: []
-      statusAhead: 0
-      selectedIndex: -1
-    selectedEntry:
-      commitID: 
-      mergeA: 
-      mergeB: 
-      authorName: 
-      authorEmail: 
-      commitEmail: 
-      commitName: 
-      summary: 
-      description: 
-      timeString: 0001-01-01T00:00:00.000+00:00
-      commitTimeString: 0001-01-01T00:00:00.000+00:00
-      changes: []
-    treeChanges:
-      assets:
-        keys: []
-        values: []
-      folders:
-        keys: []
-        values: []
-      checkedFileNodes:
-        keys: []
-        values: []
-      title: 
-      pathSeparator: /
-      displayRootNode: 0
-      isSelectable: 1
-      isCheckable: 0
-      isUsingGlobalSelection: 0
-      nodes: []
-      selectedNode:
-        path: 
-        label: 
-        level: 0
-        isFolder: 0
-        isContainer: 0
-        isCollapsed: 0
-        isHidden: 0
-        isActive: 0
-        treeIsCheckable: 0
-        checkState: 0
-        isLocked: 0
-        gitStatusEntry:
-          path: 
-          fullPath: 
-          projectPath: 
-          originalPath: 
-          indexStatus: 0
-          workTreeStatus: 0
-    detailsScroll: {x: 0, y: 0}
-  settingsView:
-    gitPathView:
-      gitPath: /Users/alex/Library/Application Support/GitForUnity/git/bin/git
-      gitLfsPath: /Users/alex/Library/Application Support/GitForUnity/git/libexec/git-core/git-lfs
-      errorMessage: 
-      resetToBundled: 0
-      resetToSystem: 0
-      changingManually: 0
-    hasRemote: 0
-    lastCurrentRemoteChangedEvent:
-      updatedTimeString: 0001-01-01T00:00:00.000+00:00
-      cacheType: 1
-    newRepositoryRemoteUrl: 
-    repositoryRemoteName: origin
-    repositoryRemoteUrl: 
-    scroll: {x: 0, y: 0}
-    userSettingsView:
-      gitName: 
-      gitEmail: 
-      newGitName: 
-      newGitEmail: 
-      needsSaving: 0
-      lastCheckUserChangedEvent:
-        updatedTimeString: 0001-01-01T00:00:00.000+00:00
-        cacheType: 8
-    webTimeout: 100000
-    gitTimeout: 5000
-  locksView:
-    currentRemoteHasUpdate: 1
-    currentStatusEntriesHasUpdate: 0
-    currentLocksHasUpdate: 0
-    keychainHasUpdate: 1
-    locksControl:
-      scroll: {x: 0, y: 0}
-      gitLockEntries: []
-      assets:
-        keys: []
-        values: []
-      gitStatusDictionary:
-        keys: []
-        values: []
-      selectedEntry:
-        gitLock:
-          id: 
-          path: 
-          owner:
-            name: 
-            email: 
-          lockedAtString: 
-        gitFileStatus: 0
-        lockedAt: 1 Jan 0001, 00:00
-    lastCurrentRemoteChangedEvent:
-      updatedTimeString: 0001-01-01T00:00:00.000+00:00
-      cacheType: 1
-    lastLocksChangedEvent:
-      updatedTimeString: 0001-01-01T00:00:00.000+00:00
-      cacheType: 7
-    lastStatusEntriesChangedEvent:
-      updatedTimeString: 0001-01-01T00:00:00.000+00:00
-      cacheType: 6
-    lockedFiles: []
-    gitStatusEntries: []
-    currentUsername: 
-    unlockFileMenuContent:
-      m_Text: Release Lock
-      m_Image: {fileID: 0}
-      m_Tooltip: 
-      m_TextWithWhitespace: "Release Lock\u200B"
-    forceUnlockFileMenuContent:
-      m_Text: Release Lock (forced)
-      m_Image: {fileID: 0}
-      m_Tooltip: 
-      m_TextWithWhitespace: "Release Lock (forced)\u200B"
-  hasRemote: 1
-  currentRemoteName: 
-  currentBranch: 
-  currentRemoteUrl: No remote configured
-  statusAhead: 0
-  statusBehind: 0
-  hasItemsToCommit: 0
-  isTrackingRemoteBranch: 0
-  currentBranchContent:
-    m_Text: 
-    m_Image: {fileID: 0}
-    m_Tooltip: Active branch
-    m_TextWithWhitespace: 
-  currentRemoteUrlContent:
-    m_Text: No remote configured
-    m_Image: {fileID: 0}
-    m_Tooltip: Add a remote in the Settings tab
-    m_TextWithWhitespace: 
-  lastCurrentBranchAndRemoteChangedEvent:
-    updatedTimeString: 0001-01-01T00:00:00.000+00:00
-    cacheType: 1
-  lastTrackingStatusChangedEvent:
-    updatedTimeString: 0001-01-01T00:00:00.000+00:00
-    cacheType: 5
-  lastStatusEntriesChangedEvent:
-    updatedTimeString: 0001-01-01T00:00:00.000+00:00
-    cacheType: 6
-  pullButtonContent:
-    m_Text: Pull
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-    m_TextWithWhitespace: "Pull\u200B"
-  pushButtonContent:
-    m_Text: Push
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-    m_TextWithWhitespace: "Push\u200B"
-  refreshButtonContent:
-    m_Text: Refresh
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-    m_TextWithWhitespace: "Refresh\u200B"
-  fetchButtonContent:
-    m_Text: Fetch
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-    m_TextWithWhitespace: "Fetch\u200B"
-  repositoryProgressValue: 0
-  repositoryProgressMessage: Fetching
-  appManagerProgressValue: 0.9
-  appManagerProgressMessage: 
-  primaryConnectionUsername: 
---- !u!114 &15
+--- !u!114 &18
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -787,8 +464,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 1
     y: 24
-    width: 569
-    height: 350
+    width: 481
+    height: 336
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -811,7 +488,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/GoogleMobileAds
+    - Assets/Scenes
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -821,16 +498,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/GoogleMobileAds
+  - Assets/Scenes
   m_LastFoldersGridSize: 16
   m_LastProjectPath: /Users/alex/Desktop/app/SudokuMaster
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: ae6a0000
-    m_LastClickedID: 27310
-    m_ExpandedIDs: 00000000a4c20000bec50000
+    scrollPos: {x: 0, y: 56}
+    m_SelectedIDs: 6cc60000
+    m_LastClickedID: 50796
+    m_ExpandedIDs: 0000000060a6000062a60000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -847,7 +524,7 @@ MonoBehaviour:
       m_OriginalEventType: 11
       m_IsRenamingFilename: 1
       m_TrimLeadingAndTrailingWhitespace: 0
-      m_ClientGUIView: {fileID: 7}
+      m_ClientGUIView: {fileID: 10}
     m_SearchString: 
     m_CreateAssetUtility:
       m_EndAction: {fileID: 0}
@@ -859,7 +536,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000a4c20000bec50000
+    m_ExpandedIDs: 0000000060a6000062a60000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -887,7 +564,7 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 0
+    m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c623000000000000f6a60000b0b40000dcb700003a690000
     m_CreateAssetUtility:
       m_EndAction: {fileID: 0}
@@ -899,8 +576,8 @@ MonoBehaviour:
     m_ScrollPosition: {x: 0, y: 0}
     m_GridSize: 16
   m_SkipHiddenPackages: 0
-  m_DirectoriesAreaWidth: 244
---- !u!114 &16
+  m_DirectoriesAreaWidth: 216
+--- !u!114 &19
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -923,8 +600,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 24
-    width: 530
-    height: 1162
+    width: 437
+    height: 1211
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -949,7 +626,7 @@ MonoBehaviour:
   m_LockTracker:
     m_IsLocked: 0
   m_PreviewWindow: {fileID: 0}
---- !u!114 &17
+--- !u!114 &20
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -972,8 +649,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 1
     y: 24
-    width: 385
-    height: 786
+    width: 313
+    height: 849
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -990,7 +667,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 3a85fbffb886fbfffe86fbff0a88fbff5488fbffbe88fbffda89fbffa485fcffd087fcffd288fcffba8bfcff2885fdff5482feff0085feffee48ffff4aa0ffff96a0ffff34f8ffff44f9ffff26fbffff1470000050700000f68d00000c8e0000328e000052a80000f6d10000ead200004cf90000
+      m_ExpandedIDs: de76ecff0ed5edff20d5edff12d8edff3ad8edffb4daeeff6edceeff1ae1eeff2ce1eeff22e4eeff4ae4eeff223aefff8a3eefff308bf2ff1ad6f7ff2cd6f7ff22d9f7ff4ad9f7ff9cdbf7ff32ddf7ff6c31f8ffd232f8ff6234f8ffea89f8ff808bf8ff08e1f8ff76e3f8ff3c39f9ff6c3df9ffec40f9fff841f9ff7c43f9ff4698f9ff2c9bf9ff8642faffd043faff5e98faffc09bfaffc0f0faffe2f3faff4af4faff6047fbff289dfbfff09dfbff18a0fbffeca1fbff7ef6fbff28f8fbffb04cfcffd24efcffc84cfdfffef8feff7058ffffeccf000028d0000072fb0000ce08010050150100501e01005e1e0100b6200100ec220100442501005a270100d63101007c370100d4390100583f01004a490100a24b010096570100ee5901008c5e01001065010068670100f46b01001a6d0100726f0100a0700100f87201007e7701002a7d0100887f010026840100d2890100308c0100ce9001007a960100d89801008a9f0100e8a1010022a3010080a501008ab00100c6b0010094fd0100c22a0200202d0200023e0200604002002870020080700200a6710200
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1007,7 +684,7 @@ MonoBehaviour:
         m_OriginalEventType: 11
         m_IsRenamingFilename: 0
         m_TrimLeadingAndTrailingWhitespace: 0
-        m_ClientGUIView: {fileID: 0}
+        m_ClientGUIView: {fileID: 9}
       m_SearchString: 
     m_ExpandedScenes: []
     m_CurrenRootInstanceID: 0
@@ -1015,7 +692,7 @@ MonoBehaviour:
       m_IsLocked: 0
     m_CurrentSortingName: TransformSorting
   m_WindowGUID: 4c969a2b90040154d917609493e03593
---- !u!114 &18
+--- !u!114 &21
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1036,10 +713,10 @@ MonoBehaviour:
     m_TextWithWhitespace: "Scene\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 1321
-    y: 83
-    width: 1142
-    height: 802
+    x: 2477
+    y: 97
+    width: 954
+    height: 849
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -1054,11 +731,11 @@ MonoBehaviour:
       displayed: 1
       id: Tool Settings
       index: 1
-      contents: '{"m_Layout":1,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":-101.0,"y":-26.0},"m_FloatingSnapCorner":3,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      contents: '{"m_Layout":1,"m_Collapsed":false,"m_Folded":false,"m_Floating":false,"m_FloatingSnapOffset":{"x":0.0,"y":0.0},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":3,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
       floating: 0
       collapsed: 0
       snapOffset: {x: 0, y: 0}
-      snapOffsetDelta: {x: -101, y: -26}
+      snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 3
       layout: 1
       size: {x: 0, y: 0}
@@ -1580,9 +1257,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 0, y: 0, z: 0}
+    m_Target: {x: -0.65749645, y: 0.11384709, z: 0.043209758}
     speed: 2
-    m_Value: {x: -0.47547778, y: -1.305905, z: 0.07703684}
+    m_Value: {x: -0.65749645, y: 0.11384709, z: 0.043209758}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1632,9 +1309,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 10
+    m_Target: 5.678335
     speed: 2
-    m_Value: 3.3644414
+    m_Value: 5.678335
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1655,7 +1332,7 @@ MonoBehaviour:
   m_LastSceneViewRotation: {x: -0.08717229, y: 0.89959055, z: -0.21045254, w: -0.3726226}
   m_LastSceneViewOrtho: 0
   m_Viewpoint:
-    m_SceneView: {fileID: 18}
+    m_SceneView: {fileID: 21}
     m_CameraOverscanSettings:
       m_Opacity: 50
       m_Scale: 1
@@ -1668,7 +1345,7 @@ MonoBehaviour:
     name: Contributors / Receivers
     section: Lighting
   m_ViewIsLockedToObject: 0
---- !u!114 &19
+--- !u!114 &22
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1689,10 +1366,10 @@ MonoBehaviour:
     m_TextWithWhitespace: "Console\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 572
+    x: 484
     y: 24
-    width: 958
-    height: 350
+    width: 787
+    height: 336
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -1704,7 +1381,7 @@ MonoBehaviour:
     m_SaveData: []
     m_ContainerData: []
     m_OverlaysVisible: 1
---- !u!114 &20
+--- !u!114 &23
 MonoBehaviour:
   m_ObjectHideFlags: 52
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1725,10 +1402,10 @@ MonoBehaviour:
     m_TextWithWhitespace: "Simulator\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 388
+    x: 316
     y: 24
-    width: 1142
-    height: 786
+    width: 955
+    height: 849
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -1748,7 +1425,7 @@ MonoBehaviour:
   m_ShowGizmos: 0
   m_TargetDisplay: 0
   m_ClearColor: {r: 0, g: 0, b: 0, a: 1}
-  m_TargetSize: {x: 1125, y: 2436}
+  m_TargetSize: {x: 1170, y: 2532}
   m_TextureFilterMode: 0
   m_TextureHideFlags: 61
   m_RenderIMGUI: 1
@@ -1768,7 +1445,7 @@ MonoBehaviour:
     fitToScreenEnabled: 0
     rotationDegree: 0
     highlightSafeAreaEnabled: 0
-    friendlyName: Apple iPad Mini 4
+    friendlyName: Apple iPhone 13 Pro
     screenIndex: 0
     networkReachability: 1
     systemLanguage: 10
