@@ -558,7 +558,7 @@ stateDiagram-v2
     state Hypothesis {
         [*] --> OrangeStyling
         OrangeStyling --> [*] : isHypothesisNumber = true
-        note right of OrangeStyling : Hypothesis_Color#58;37\nHypothesis_Text_Color#58;38
+        note right of OrangeStyling : Hypothesis_Color#58;37<br/>Hypothesis_Text_Color#58;38
     }
     
     Hypothesis --> ValidationRequested : Manual validation
@@ -585,8 +585,8 @@ stateDiagram-v2
     CorrectConfirmed --> [*] : Cell locked
     ErrorHighlight --> Hypothesis : Player continues
     
-    note right of Hypothesis : SetAsHypothesis()#58;594-598\nVisual distinction from confirmed numbers
-    note right of ValidationRequested : ValidateCompleteBoard()#58;60\nComprehensive board analysis
+    note right of Hypothesis : SetAsHypothesis()#58;594-598<br/>Visual distinction from confirmed numbers
+    note right of ValidationRequested : ValidateCompleteBoard()#58;60<br/>Comprehensive board analysis
 ```
 
 *Hell Level cells maintain a distinct hypothesis state (`isHypothesisNumber = true`) with unique visual feedback until validation confirms or rejects the placement.*

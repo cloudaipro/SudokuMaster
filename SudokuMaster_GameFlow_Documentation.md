@@ -552,15 +552,15 @@ flowchart TD
 ```mermaid
 graph LR
     subgraph "Performance Features"
-        CC[Cell Caching<br/>Dictionary of int to SudokuCell<br/>Fast O(1) access]
-        BU[Batched Updates<br/>BatchProcessCellChanges() line 198<br/>Reduced UI calls]
+        CC[Cell Caching<br/>Dictionary of int to SudokuCell<br/>Fast O1 access]
+        BU[Batched Updates<br/>BatchProcessCellChanges line 198<br/>Reduced UI calls]
         OP[Object Pooling<br/>Reusable UI elements<br/>Memory efficient]
-        CD[Cache Invalidation<br/>MarkCacheDirty() line 192<br/>Automatic refresh]
+        CD[Cache Invalidation<br/>MarkCacheDirty line 192<br/>Automatic refresh]
     end
     
     subgraph "ValidationContext.cs"
-        IC[InitializeCellCache() lines 162-179]
-        GCF[GetCellFast() lines 181-190]
+        IC[InitializeCellCache lines 162-179]
+        GCF[GetCellFast lines 181-190]
     end
     
     CC --> IC
