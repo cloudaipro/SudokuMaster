@@ -370,7 +370,7 @@ public class SudokuBoard : MonoBehaviour
     private void SetGridNumber(string level)
     {
 
-        if (level == "Easy")
+        if (level == "Easy" || level == "Hell")
         {
             var data = Generator.Sudoku_Generator("Easy");
             setCellData(new SudokuData.SudokuBoardData(data.unsolved, data.solved));
