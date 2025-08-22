@@ -370,21 +370,15 @@ public class SudokuBoard : MonoBehaviour
     private void SetGridNumber(string level)
     {
 
-        if (level == "Easy" || level == "Hell")
+        if (level == "Easy")
         {
-            //var dataOfLevel = SudokuData.sudoku_game[level];
-            //selected_dataIdx = Random.Range(0, dataOfLevel.Count);
-            //var data = dataOfLevel[selected_dataIdx];            
-            //setCellData(data);
             var data = Generator.Sudoku_Generator("Easy");
             setCellData(new SudokuData.SudokuBoardData(data.unsolved, data.solved));
         }
         else
         {
-            var dataOfLevel = SudokuData.GetData(level);//sudoku_game[level];
-            //selected_dataIdx = 0; //Random.Range(0, 3);
+            var dataOfLevel = SudokuData.GetData(level);
             selected_dataIdx = Random.Range(0, dataOfLevel.Count);
-            //selected_grid_data = 5;
             var data = dataOfLevel[selected_dataIdx];
             data.ShuffleNumber();
             setCellData(data);
