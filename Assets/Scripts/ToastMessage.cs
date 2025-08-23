@@ -1,14 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ToastMessage : MonoBehaviour
 {
-    void Start()
-    {
-        //showToast("Hello", 2);
-    }
     public Image background;
     public Text txt;
 

@@ -33,8 +33,6 @@ public class ManualValidationButton : MonoBehaviour
     private bool hasChanges = false;
     private bool isValidating = false;
     
-    // Validation result display
-    private ValidationResultModal resultModal;
     
     void Start()
     {

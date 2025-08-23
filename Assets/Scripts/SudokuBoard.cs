@@ -58,7 +58,6 @@ public class SudokuBoard : MonoBehaviour
     private int stepHintMode = 0;
     private string skillName = "";
     private bool noteHintMode = false;
-    //delegate void stepMethod(int step);
     class HintStep
     {
         public string Name;
@@ -163,7 +162,6 @@ public class SudokuBoard : MonoBehaviour
         GameEvents.OnRewardAdFail += RewardAdFail;
         GameEvents.OnDidFinishLiveRewardAd += DidFinisLiveRewardAd;
         GameEvents.OnSaveProgressData += SaveData;
-        //GameEvents.OnApplyHint += ApplyHint;
         NextHint.onClick.AddListener(NextHintClick);
         PrevHint.onClick.AddListener(PrevHintClick);
     }
@@ -180,7 +178,6 @@ public class SudokuBoard : MonoBehaviour
         GameEvents.OnRewardAdFail -= RewardAdFail;
         GameEvents.OnDidFinishLiveRewardAd -= DidFinisLiveRewardAd;
         GameEvents.OnSaveProgressData -= SaveData;
-        //GameEvents.OnApplyHint -= ApplyHint;
         NextHint.onClick.RemoveAllListeners();
         PrevHint.onClick.RemoveAllListeners();
 
@@ -194,16 +191,6 @@ public class SudokuBoard : MonoBehaviour
         GameSettings.Instance.ExistAfterWon = false;
     }
 
-    //void OnApplicationQuit()
-    //{
-    //    // save data before exit
-    //    if (Lives.Instance.lives > 0)
-    //        SaveData();
-    //    else
-    //    {
-    //        Config.DeleteDataFile();
-    //    }
-    //}
 
     private void SaveData()
     {

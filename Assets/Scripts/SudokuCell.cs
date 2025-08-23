@@ -165,7 +165,6 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
         Has_Wrong_value = false;
         if (Number != 0 && Number != Correct_number) {
             Has_Wrong_value = true;
-            //SetSquareColor(Wrong_Back_Color);//new Color(1.0f, 0.42f, 0.38f));
             UpdateSquareColor();
         }
     }
@@ -264,7 +263,6 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
             Number = 0;
             DisplayText();
         }
-        //SetSquareColor(Color.white);
         UpdateSquareColor();
     }
 
@@ -277,9 +275,7 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
                 Number = 0;
                 Has_Wrong_value = false;
                 isHypothesisNumber = false; // Clear hypothesis state
-                //SetSquareColor(Color.white);
                 UpdateSquareColor();
-                //SetNoteNumberValue(0);
                 DisplayText();
                 
                 // Notify about the cleared number if it was not empty
