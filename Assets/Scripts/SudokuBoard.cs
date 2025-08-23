@@ -2237,14 +2237,6 @@ public class SudokuBoard : MonoBehaviour
         }
         
         // Initialize Testing Suite (only in development/debug builds)
-        #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        if (GameObject.FindObjectOfType<HellLevelTestingSuite>() == null)
-        {
-            GameObject testingObj = new GameObject("HellLevelTestingSuite");
-            testingObj.transform.SetParent(uiContainer.transform, false);
-            testingObj.AddComponent<HellLevelTestingSuite>();
-        }
-        #endif
         
         Debug.Log("Hell Level UI components initialized");
     }
