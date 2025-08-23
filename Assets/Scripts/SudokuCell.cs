@@ -273,6 +273,7 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
         if (IsSelected && !Has_default_value)
         {
             if (isHypothesisNumber || !IsCorrectNumberSet()) {
+                int clearedNumber = Number; // Capture the number before clearing
                 Number = 0;
                 Has_Wrong_value = false;
                 isHypothesisNumber = false; // Clear hypothesis state
@@ -280,6 +281,12 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
                 UpdateSquareColor();
                 //SetNoteNumberValue(0);
                 DisplayText();
+                
+                // Notify about the cleared number if it was not empty
+                if (clearedNumber > 0)
+                {
+                    GameEvents.OnNumberClearedMethod(clearedNumber);
+                }
             }
         }
     }
@@ -313,6 +320,9 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
                         isHypothesisNumber = true;
                         Has_Wrong_value = false; // Don't mark as wrong in hypothesis mode
                         
+                        // Still track number usage for UI updates (sub_value decrements)
+                        GameEvents.OnNumberUsedMethod(number);
+                        
                         // Don't clear notes or trigger completion in hypothesis mode
                         // Visual feedback will distinguish hypothesis vs confirmed numbers
                     }
@@ -332,6 +342,7 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
                         {
                             Has_Wrong_value = true;
                             isHypothesisNumber = false;
+                            GameEvents.OnNumberUsedMethod(number);
                             GameEvents.OnWrongNumberMethod();
                         }
                     }
@@ -351,6 +362,7 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
                         {
                             Has_Wrong_value = true;
                             isHypothesisNumber = false;
+                            GameEvents.OnNumberUsedMethod(number);
                             GameEvents.OnWrongNumberMethod();
                         }
                     }
@@ -371,6 +383,7 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
                     {                    
                         Has_Wrong_value = true;
                         isHypothesisNumber = false;
+                        GameEvents.OnNumberUsedMethod(number);
                         GameEvents.OnWrongNumberMethod();
                     }
                 }

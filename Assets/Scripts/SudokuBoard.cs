@@ -396,7 +396,7 @@ public class SudokuBoard : MonoBehaviour
             //cell.Correct_number = data.solved_data[i];
             cell.SetCorrectNumber(data.solved_data[i]);
             cell.Has_default_value = data.unsolved_data[i] != 0;
-            if (cell.Number == cell.Correct_number)
+            if (cell.Number >0)
                 sub_text_value[cell.Number - 1] -= 1;
 
             pos = LineIndicator.Instance.GetCellPosition(i);

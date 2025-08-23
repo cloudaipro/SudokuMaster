@@ -295,6 +295,14 @@ public class ManualValidationButton : MonoBehaviour
         // Perform validation through ValidationContext
         ValidationResult result = validationContext.ValidateBoard();
         
+        // Unlock any locked numbers since validation converts hypothesis to regular numbers
+        var lockManager = FindObjectOfType<NumberLockManager>();
+        if (lockManager != null && lockManager.HasLockedNumber())
+        {
+            lockManager.UnlockNumber();
+            Debug.Log("ManualValidationButton: Unlocked number after validation");
+        }
+        
         // Process result
         OnValidationResult(result);
         

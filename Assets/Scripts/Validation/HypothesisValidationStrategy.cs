@@ -89,7 +89,7 @@ public class HypothesisValidationStrategy : IValidationStrategy
         errorCells = errorCells.Distinct().ToList();
 
         // Update Has_Wrong_value property on cells for visual feedback
-        //UpdateCellErrorStates(allCells, errorCells);
+        UpdateCellErrorStates(allCells, errorCells);
 
         float completionPercentage = (correctCount / 81f) * 100f;
         
@@ -121,7 +121,7 @@ public class HypothesisValidationStrategy : IValidationStrategy
             var duplicates = rowCells.GroupBy(c => c.Number).Where(g => g.Count() > 1);
             foreach (var duplicate in duplicates)
             {
-                errorCells.AddRange(duplicate.Select(c => c.Cell_index));
+                errorCells.AddRange(duplicate.Where(c => c.IsHypothesisNumber()).Select(c => c.Cell_index));
             }
         }
         
@@ -132,7 +132,7 @@ public class HypothesisValidationStrategy : IValidationStrategy
             var duplicates = colCells.GroupBy(c => c.Number).Where(g => g.Count() > 1);
             foreach (var duplicate in duplicates)
             {
-                errorCells.AddRange(duplicate.Select(c => c.Cell_index));
+                errorCells.AddRange(duplicate.Where(c => c.IsHypothesisNumber()).Select(c => c.Cell_index));
             }
         }
         
@@ -143,7 +143,7 @@ public class HypothesisValidationStrategy : IValidationStrategy
             var duplicates = blockCells.GroupBy(c => c.Number).Where(g => g.Count() > 1);
             foreach (var duplicate in duplicates)
             {
-                errorCells.AddRange(duplicate.Select(c => c.Cell_index));
+                errorCells.AddRange(duplicate.Where(c => c.IsHypothesisNumber()).Select(c => c.Cell_index));
             }
         }
         
@@ -246,17 +246,24 @@ public class HypothesisValidationStrategy : IValidationStrategy
 
     private void UpdateCellErrorStates(List<SudokuCell> allCells, List<int> errorCells)
     {
-        // First, reset all cells to no error state (except default values)
+        // First, process all hypothesis numbers and convert them to regular numbers
         for (int i = 0; i < allCells.Count; i++)
         {
             var cell = allCells[i];
             if (!cell.Has_default_value)
             {
+                // Clear hypothesis state for all cells after validation
+                if (cell.IsHypothesisNumber())
+                {
+                    cell.SetAsHypothesis(false); // This calls UpdateSquareColor internally
+                }
+                
+                // Reset error state initially
                 cell.Has_Wrong_value = false;
             }
         }
 
-        // Then set error state for cells with errors
+        // Then set error state for cells with wrong numbers
         foreach (int errorIndex in errorCells)
         {
             if (errorIndex >= 0 && errorIndex < allCells.Count)
@@ -264,13 +271,13 @@ public class HypothesisValidationStrategy : IValidationStrategy
                 var cell = allCells[errorIndex];
                 if (!cell.Has_default_value)
                 {
-                    cell.Has_Wrong_value = true;
+                    cell.Has_Wrong_value = (cell.Number != cell.Correct_number);
                     // Force cell visual update
                     cell.UpdateSquareColor();
                 }
             }
         }
         
-        Debug.Log($"UpdateCellErrorStates: Set {errorCells.Count} cells to error state");
+        Debug.Log($"UpdateCellErrorStates: Cleared hypothesis state for all cells, set {errorCells.Count} cells to error state");
     }
 }

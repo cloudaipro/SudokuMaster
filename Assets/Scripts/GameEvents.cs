@@ -41,6 +41,10 @@ public class GameEvents : MonoBehaviour
     public static event ClearNumber OnClearNumber;
     public static void OnClearNumberMethod() => OnClearNumber?.Invoke();
 
+    public delegate void NumberCleared(int number);
+    public static event NumberCleared OnNumberCleared;
+    public static void OnNumberClearedMethod(int number) => OnNumberCleared?.Invoke(number);
+
     public delegate void BoardCompleted();
     public static event BoardCompleted OnBoardCompleted;
     public static void OnBoardCompletedMethod() => OnBoardCompleted?.Invoke();
