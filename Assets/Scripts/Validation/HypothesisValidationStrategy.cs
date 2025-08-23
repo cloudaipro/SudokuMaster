@@ -88,6 +88,9 @@ public class HypothesisValidationStrategy : IValidationStrategy
         errorCells.AddRange(duplicateErrors);
         errorCells = errorCells.Distinct().ToList();
 
+        // Update Has_Wrong_value property on cells for visual feedback
+        //UpdateCellErrorStates(allCells, errorCells);
+
         float completionPercentage = (correctCount / 81f) * 100f;
         
         // Generate graded feedback message
@@ -188,6 +191,9 @@ public class HypothesisValidationStrategy : IValidationStrategy
         // Don't update lives system
         // Don't play audio feedback
         
+        // BUT we do need to notify ManualValidationButton that changes occurred
+        GameEvents.didSetNumberMethod(cellIndex);
+        
         // Just visually mark the cell as having a hypothesis value
         cell.Has_Wrong_value = false; // Reset wrong value flag for hypothesis mode
     }
@@ -236,5 +242,35 @@ public class HypothesisValidationStrategy : IValidationStrategy
     public int GetHypothesisCount()
     {
         return hypothesisPlacements.Count;
+    }
+
+    private void UpdateCellErrorStates(List<SudokuCell> allCells, List<int> errorCells)
+    {
+        // First, reset all cells to no error state (except default values)
+        for (int i = 0; i < allCells.Count; i++)
+        {
+            var cell = allCells[i];
+            if (!cell.Has_default_value)
+            {
+                cell.Has_Wrong_value = false;
+            }
+        }
+
+        // Then set error state for cells with errors
+        foreach (int errorIndex in errorCells)
+        {
+            if (errorIndex >= 0 && errorIndex < allCells.Count)
+            {
+                var cell = allCells[errorIndex];
+                if (!cell.Has_default_value)
+                {
+                    cell.Has_Wrong_value = true;
+                    // Force cell visual update
+                    cell.UpdateSquareColor();
+                }
+            }
+        }
+        
+        Debug.Log($"UpdateCellErrorStates: Set {errorCells.Count} cells to error state");
     }
 }

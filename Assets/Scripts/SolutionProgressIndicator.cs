@@ -12,15 +12,15 @@ public class SolutionProgressIndicator : MonoBehaviour
     [SerializeField] private Image progressBackground;
     
     [Header("Visual Design")]
-    [SerializeField] private Color progressCircleColor = new Color(1f, 0.6f, 0f, 1f); // Vibrant orange
-    [SerializeField] private Color progressBackgroundColor = new Color(0.1f, 0.1f, 0.1f, 0.7f); // Dark, neutral background
-    [SerializeField] private Color progressTextColor = Color.white; // White for readability
+    [SerializeField] private Color progressCircleColor = new Color(0.14f,0.18f, 0.41f); // Vibrant orange
+    [SerializeField] private Color progressBackgroundColor = new Color(0.1f, 0.1f, 0.1f, 0.1f); // Dark, neutral background
+    [SerializeField] private Color progressTextColor = new Color(0.14f,0.18f, 0.41f); // White for readability
     [SerializeField] private float circleThickness = 8f;
     
     [Header("Layout Settings")]
     [SerializeField] private Vector2 indicatorSize = new Vector2(80, 80);
     [SerializeField] private Vector2 indicatorPosition = new Vector2(-30, -60); // Aligned with new header
-    [SerializeField] private int fontSize = 20;
+    [SerializeField] private int fontSize = 36;
     
     [Header("Animation")]
     [SerializeField] private float animationSpeed = 2f;
@@ -86,8 +86,9 @@ public class SolutionProgressIndicator : MonoBehaviour
         panelRect.anchorMin = new Vector2(1f, 1f);
         panelRect.anchorMax = new Vector2(1f, 1f);
         panelRect.pivot = new Vector2(1f, 1f);
-        panelRect.anchoredPosition = indicatorPosition;
-        panelRect.sizeDelta = indicatorSize;
+        // panelRect.anchoredPosition = indicatorPosition;
+        panelRect.anchoredPosition = new Vector2(350f, 100f);
+        panelRect.sizeDelta = new Vector2(160f, 160f);
         
         // Create progress background circle
         GameObject bgCircleObj = new GameObject("ProgressBackground");

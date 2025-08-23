@@ -312,7 +312,8 @@ public class ValidationResultModal : MonoBehaviour
         // Create button text
         Text buttonText = CreateTextElement($"{text}Text", buttonObj, Vector2.zero, size);
         buttonText.alignment = TextAnchor.MiddleCenter;
-        buttonText.fontSize = 16;
+        buttonText.fontSize = 36;
+        buttonText.text = text;
         
         RectTransform textRect = buttonText.GetComponent<RectTransform>();
         textRect.anchorMin = Vector2.zero;

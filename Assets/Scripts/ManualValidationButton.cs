@@ -73,14 +73,7 @@ public class ManualValidationButton : MonoBehaviour
             validationButton.onClick.AddListener(OnValidateButtonClicked);
         }
         
-        // Find or create ValidationResultModal
-        resultModal = FindObjectOfType<ValidationResultModal>();
-        if (resultModal == null)
-        {
-            GameObject modalObj = new GameObject("ValidationResultModal");
-            modalObj.transform.SetParent(transform.parent, false); // Same parent as button
-            resultModal = modalObj.AddComponent<ValidationResultModal>();
-        }
+        // ValidationResultModal no longer used - visual feedback through cell colors instead
         
         // Subscribe to game events for change tracking
         GameEvents.OnDidSetNumber += OnCellChanged;
@@ -315,11 +308,8 @@ public class ManualValidationButton : MonoBehaviour
         
         Debug.Log($"Validation result: {result.Type} - {result.Message}");
         
-        // Show validation result modal
-        if (resultModal != null)
-        {
-            resultModal.ShowValidationResult(result);
-        }
+        // No longer show modal - visual feedback through cell colors instead
+        // The validation will update has_wrong_value on cells, causing red text
         
         // Update button state based on result
         switch (result.Type)

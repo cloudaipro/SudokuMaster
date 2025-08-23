@@ -34,8 +34,8 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
     public Color Wrong_Color = Color.red;
     public Color Focus_Color = Color.cyan;
     public Color HintMode_Focus_Color = Color.cyan;
-    public Color Hypothesis_Color = new Color(0.8f, 0.6f, 0.2f, 1f); // Orange for hypothesis numbers
-    public Color Hypothesis_Text_Color = new Color(1f, 0.9f, 0.7f, 1f); // Light orange text   
+    //public Color Hypothesis_Color = new Color(0.8f, 0.6f, 0.2f, 1f); // Orange for hypothesis numbers
+    public Color Hypothesis_Text_Color = new Color(0.736f, 0.64f, 0.156f, 1f);//Color(1f, 0.9f, 0.7f, 1f); // Light orange text   
 
     public float sizeScaleForFocus = 1.1f;
 
@@ -270,15 +270,17 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
 
     public void OnClearNumber()
     {
-        if (IsSelected && !Has_default_value && !IsCorrectNumberSet())
+        if (IsSelected && !Has_default_value)
         {
-            Number = 0;
-            Has_Wrong_value = false;
-            isHypothesisNumber = false; // Clear hypothesis state
-            //SetSquareColor(Color.white);
-            UpdateSquareColor();
-            //SetNoteNumberValue(0);
-            DisplayText();
+            if (isHypothesisNumber || !IsCorrectNumberSet()) {
+                Number = 0;
+                Has_Wrong_value = false;
+                isHypothesisNumber = false; // Clear hypothesis state
+                //SetSquareColor(Color.white);
+                UpdateSquareColor();
+                //SetNoteNumberValue(0);
+                DisplayText();
+            }
         }
     }
 
@@ -402,9 +404,9 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
             colors.disabledColor = (bHintMode) ? (bHilightedCellInHintMode) ? HintMode_Focus_Color : HintMode_Indicated_Color
                                                : Indicated_Color;
         }
-        else if (isHypothesisNumber && Number != 0) {
-            colors.disabledColor = Hypothesis_Color; // Orange background for hypothesis numbers
-        }
+        // else if (isHypothesisNumber && Number != 0) {
+        //     colors.disabledColor = Hypothesis_Color; // Orange background for hypothesis numbers
+        // }
         this.colors = colors;
 
         // note color

@@ -111,7 +111,7 @@ public class SudokuBoard : MonoBehaviour
             EGameMode.MEDIUM => "", // $" - level {Setting.Instance.MediumLevel}",
             EGameMode.HARD => "", // $" - level {Setting.Instance.HardLevel}",
             EGameMode.EXTREME => "", // $" - level {Setting.Instance.ExtremeLevel}",
-            EGameMode.HELL => " - The Ultimate Challenge",
+            EGameMode.HELL => "",
             _ => ""
         };
 
@@ -2187,19 +2187,19 @@ public class SudokuBoard : MonoBehaviour
             
             // Add RectTransform to UI container
             RectTransform containerRect = uiContainer.AddComponent<RectTransform>();
-            containerRect.anchorMin = Vector2.zero;
-            containerRect.anchorMax = Vector2.one;
-            containerRect.offsetMin = Vector2.zero;
-            containerRect.offsetMax = Vector2.zero;
+            containerRect.anchorMin = new Vector2(0.5f, 1f);
+            containerRect.anchorMax = new Vector2(0.5f, 1f);
+            containerRect.anchoredPosition = new Vector2(0, -425);
+            containerRect.sizeDelta = new Vector2(0, 850);
         }
         
         // Initialize Hell Level Mode Indicator
-        if (GameObject.FindObjectOfType<HellLevelModeIndicator>() == null)
-        {
-            GameObject modeIndicatorObj = new GameObject("HellLevelModeIndicator");
-            modeIndicatorObj.transform.SetParent(uiContainer.transform, false);
-            modeIndicatorObj.AddComponent<HellLevelModeIndicator>();
-        }
+        // if (GameObject.FindObjectOfType<HellLevelModeIndicator>() == null)
+        // {
+        //     GameObject modeIndicatorObj = new GameObject("HellLevelModeIndicator");
+        //     modeIndicatorObj.transform.SetParent(uiContainer.transform, false);
+        //     modeIndicatorObj.AddComponent<HellLevelModeIndicator>();
+        // }
         
         // Initialize Manual Validation Button
         if (GameObject.FindObjectOfType<ManualValidationButton>() == null)
@@ -2225,21 +2225,21 @@ public class SudokuBoard : MonoBehaviour
             feedbackManagerObj.AddComponent<VisualFeedbackManager>();
         }
         
-        // Initialize Hell Level Introduction Modal
-        if (GameObject.FindObjectOfType<HellLevelIntroModal>() == null)
-        {
-            GameObject introModalObj = new GameObject("HellLevelIntroModal");
-            introModalObj.transform.SetParent(uiContainer.transform, false);
-            introModalObj.AddComponent<HellLevelIntroModal>();
-        }
+        //// Initialize Hell Level Introduction Modal
+        //if (GameObject.FindObjectOfType<HellLevelIntroModal>() == null)
+        //{
+        //    GameObject introModalObj = new GameObject("HellLevelIntroModal");
+        //    introModalObj.transform.SetParent(uiContainer.transform, false);
+        //    introModalObj.AddComponent<HellLevelIntroModal>();
+        //}
         
-        // Initialize Hell Level Tutorial
-        if (GameObject.FindObjectOfType<HellLevelTutorial>() == null)
-        {
-            GameObject tutorialObj = new GameObject("HellLevelTutorial");
-            tutorialObj.transform.SetParent(uiContainer.transform, false);
-            tutorialObj.AddComponent<HellLevelTutorial>();
-        }
+        // Initialize Hell Level Tutorial - DISABLED
+        // if (GameObject.FindObjectOfType<HellLevelTutorial>() == null)
+        // {
+        //     GameObject tutorialObj = new GameObject("HellLevelTutorial");
+        //     tutorialObj.transform.SetParent(uiContainer.transform, false);
+        //     tutorialObj.AddComponent<HellLevelTutorial>();
+        // }
         
         // Initialize Performance Optimizer
         if (GameObject.FindObjectOfType<HellLevelPerformanceOptimizer>() == null)

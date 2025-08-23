@@ -103,8 +103,11 @@ public class ValidationContext : MonoBehaviour
             currentStrategy.OnNumberPlaced(cellIndex, value);
         }
         
-        // Notify listeners of validation result
-        OnValidationResult?.Invoke(result);
+        // Only notify listeners for non-deferred results (Hell Level uses deferred validation)
+        if (result.Type != ValidationResultType.Deferred)
+        {
+            OnValidationResult?.Invoke(result);
+        }
         
         return result;
     }
