@@ -84,15 +84,22 @@ public class VisualFeedbackManager : MonoBehaviour
         // Handle validation result based on type
         switch (result.Type)
         {
+            case ValidationResultType.PartialSuccess:
             case ValidationResultType.Success:
                 ShowSuccessEffects();
+                GameEvents.CheckBoardCompletedMethod();
                 break;
                 
-            case ValidationResultType.PartialSuccess:
             case ValidationResultType.Error:
                 if (result.ErrorCells != null && result.ErrorCells.Length > 0)
                 {
                     HighlightErrorCells(result.ErrorCells);
+                    for (int i = 0; i < result.ErrorCells.Length; i++)
+                    {
+                        GameEvents.OnWrongNumberMethod();
+                        if (Lives.Instance.lives == 0)
+                            break;
+                    }
                 }
                 break;
         }

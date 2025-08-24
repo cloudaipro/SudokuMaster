@@ -24,7 +24,7 @@ public class ManualValidationButton : MonoBehaviour
     [SerializeField] private Color loadingTextColor = Color.white;
     
     [Header("Layout Settings")]
-    [SerializeField] private Vector2 buttonSize = new Vector2(300, 100);
+    [SerializeField] private Vector2 buttonSize = new Vector2(300, 120);
     [SerializeField] private Vector2 buttonPosition = new Vector2(0, -60); // Lowered to be closer to other controls
     
     private SudokuBoard sudokuBoard;

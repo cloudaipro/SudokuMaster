@@ -351,7 +351,7 @@ public class SudokuBoard : MonoBehaviour
     private void SetGridNumber(string level)
     {
 
-        if (level == "Easy" || level == "Hell")
+        if (level == "Easy")
         {
             var data = Generator.Sudoku_Generator("Easy");
             setCellData(new SudokuData.SudokuBoardData(data.unsolved, data.solved));
@@ -642,7 +642,7 @@ public class SudokuBoard : MonoBehaviour
 
     private void WrongNumber()
     {
-        Wrong_Audio.Play();
+        //Wrong_Audio.Play();
         SaveData();
     }
 
