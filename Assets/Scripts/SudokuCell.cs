@@ -322,26 +322,6 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
                         // Don't clear notes or trigger completion in hypothesis mode
                         // Visual feedback will distinguish hypothesis vs confirmed numbers
                     }
-                    else if (result.Message == "Legacy validation active")
-                    {
-                        // ValidationContext not fully initialized - use legacy logic
-                        if (number == Correct_number)
-                        {
-                            Has_Wrong_value = false;
-                            isHypothesisNumber = false;
-                            ClearupAllNotes();
-                            GameEvents.didSetNumberMethod(Cell_index);
-                            GameEvents.OnNumberUsedMethod(number);
-                            GameEvents.CheckBoardCompletedMethod();
-                        }
-                        else
-                        {
-                            Has_Wrong_value = true;
-                            isHypothesisNumber = false;
-                            GameEvents.OnNumberUsedMethod(number);
-                            GameEvents.OnWrongNumberMethod();
-                        }
-                    }
                     else
                     {
                         // Normal levels: Use immediate validation result
@@ -350,16 +330,16 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
                             Has_Wrong_value = false;
                             isHypothesisNumber = false;
                             ClearupAllNotes();
-                            GameEvents.didSetNumberMethod(Cell_index);
-                            GameEvents.OnNumberUsedMethod(number);
-                            GameEvents.CheckBoardCompletedMethod();
+                            //GameEvents.didSetNumberMethod(Cell_index);
+                            //GameEvents.OnNumberUsedMethod(number);
+                            //GameEvents.CheckBoardCompletedMethod();
                         }
                         else
                         {
                             Has_Wrong_value = true;
                             isHypothesisNumber = false;
-                            GameEvents.OnNumberUsedMethod(number);
-                            GameEvents.OnWrongNumberMethod();
+                            //GameEvents.OnNumberUsedMethod(number);
+                            //GameEvents.OnWrongNumberMethod();
                         }
                     }
                 }
@@ -382,10 +362,10 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
                         GameEvents.OnNumberUsedMethod(number);
                         GameEvents.OnWrongNumberMethod();
                     }
+                    UpdateSquareColor();
                 }
             }            
         }
-        UpdateSquareColor();
     }
     public void OnSquareSelected(int selectedIndex)
     {
@@ -397,7 +377,10 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
         var colors = this.colors;
 
         colors.disabledColor = Color.white;        
-
+        if (this.Cell_index == 1)
+        {
+            print("CellIdx:" + this.Cell_index);
+        }
         if (GameSettings.Instance.Pause)
         {
             colors.disabledColor = Color.white;

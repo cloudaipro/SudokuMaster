@@ -162,6 +162,7 @@ public class SudokuBoard : MonoBehaviour
         GameEvents.OnRewardAdFail += RewardAdFail;
         GameEvents.OnDidFinishLiveRewardAd += DidFinisLiveRewardAd;
         GameEvents.OnSaveProgressData += SaveData;
+        GameEvents.OnNumberCleared += OnNumberCleared;
         NextHint.onClick.AddListener(NextHintClick);
         PrevHint.onClick.AddListener(PrevHintClick);
     }
@@ -178,6 +179,7 @@ public class SudokuBoard : MonoBehaviour
         GameEvents.OnRewardAdFail -= RewardAdFail;
         GameEvents.OnDidFinishLiveRewardAd -= DidFinisLiveRewardAd;
         GameEvents.OnSaveProgressData -= SaveData;
+        GameEvents.OnNumberCleared -= OnNumberCleared;
         NextHint.onClick.RemoveAllListeners();
         PrevHint.onClick.RemoveAllListeners();
 
@@ -575,6 +577,33 @@ public class SudokuBoard : MonoBehaviour
                 return false;
         }
         return true;
+    }
+
+    public void OnNumberCleared(int clearedNumber)
+    {
+        // Handle number restoration for all number buttons, including inactive ones
+        foreach (var buttonObj in number_buttons)
+        {
+            if (buttonObj != null)
+            {
+                var numberButton = buttonObj.GetComponent<NumberButton>();
+                if (numberButton != null && numberButton.value == clearedNumber)
+                {
+                    // Increase sub_value when this number is cleared
+                    if (numberButton.sub_value< 9) // Don't exceed max count
+                    {
+                        numberButton.SetSubText(numberButton.sub_value + 1);
+                        
+                        // Re-enable the button if it was disabled due to sub_value being 0
+                        if (!buttonObj.activeInHierarchy)
+                        {
+                            buttonObj.SetActive(true);
+                        }
+                    }
+                    break; // Found the matching button, exit loop
+                 }
+            }
+        }
     }
 
     private void CheckBoardCompleted()
@@ -2229,12 +2258,12 @@ public class SudokuBoard : MonoBehaviour
         // }
         
         // Initialize Performance Optimizer
-        if (GameObject.FindObjectOfType<HellLevelPerformanceOptimizer>() == null)
-        {
-            GameObject optimizerObj = new GameObject("HellLevelPerformanceOptimizer");
-            optimizerObj.transform.SetParent(uiContainer.transform, false);
-            optimizerObj.AddComponent<HellLevelPerformanceOptimizer>();
-        }
+        //if (GameObject.FindObjectOfType<HellLevelPerformanceOptimizer>() == null)
+        //{
+        //    GameObject optimizerObj = new GameObject("HellLevelPerformanceOptimizer");
+        //    optimizerObj.transform.SetParent(uiContainer.transform, false);
+        //    optimizerObj.AddComponent<HellLevelPerformanceOptimizer>();
+        //}
         
         // Initialize Testing Suite (only in development/debug builds)
         

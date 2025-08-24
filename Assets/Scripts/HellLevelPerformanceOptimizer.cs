@@ -74,16 +74,16 @@ public class HellLevelPerformanceOptimizer : MonoBehaviour
             optimizedComponents.Add(optimizedButton);
         }
         
-        var feedbackManager = FindObjectOfType<VisualFeedbackManager>();
-        if (feedbackManager != null)
-        {
-            var optimizedFeedback = feedbackManager.gameObject.GetComponent<OptimizedVisualFeedback>();
-            if (optimizedFeedback == null)
-            {
-                optimizedFeedback = feedbackManager.gameObject.AddComponent<OptimizedVisualFeedback>();
-            }
-            optimizedComponents.Add(optimizedFeedback);
-        }
+        // var feedbackManager = FindObjectOfType<VisualFeedbackManager>();
+        // if (feedbackManager != null)
+        // {
+        //     var optimizedFeedback = feedbackManager.gameObject.GetComponent<OptimizedVisualFeedback>();
+        //     if (optimizedFeedback == null)
+        //     {
+        //         optimizedFeedback = feedbackManager.gameObject.AddComponent<OptimizedVisualFeedback>();
+        //     }
+        //     optimizedComponents.Add(optimizedFeedback);
+        // }
     }
     
     IEnumerator OptimizedUpdateLoop()
@@ -240,18 +240,18 @@ public class OptimizedValidationButton : MonoBehaviour, IOptimizedComponent
 // Optimized Visual Feedback
 public class OptimizedVisualFeedback : MonoBehaviour, IOptimizedComponent
 {
-    private VisualFeedbackManager feedbackManager;
+    // private VisualFeedbackManager feedbackManager;
     private HashSet<int> lastHighlightedCells;
     
     void Start()
     {
-        feedbackManager = GetComponent<VisualFeedbackManager>();
+        // feedbackManager = GetComponent<VisualFeedbackManager>();
         lastHighlightedCells = new HashSet<int>();
     }
     
     public void OptimizedUpdate()
     {
-        if (feedbackManager == null) return;
+        // if (feedbackManager == null) return;
         
         // Optimize highlight updates by batching them
         // This reduces individual cell update calls

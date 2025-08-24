@@ -103,6 +103,7 @@ public class ImmediateValidationStrategy : IValidationStrategy
         else
         {
             cell.Has_Wrong_value = true;
+            GameEvents.OnNumberUsedMethod(value);
             GameEvents.OnWrongNumberMethod();
         }
     }

@@ -68,8 +68,8 @@ public class VisualFeedbackManager : MonoBehaviour
         ClearAllHighlights();
         
         // Update visual feedback behavior based on level
-        enableErrorHighlighting = true; // Always enable for both modes
-        enableConfirmationEffects = !isHellLevel; // Disable confirmation effects in Hell Level
+        enableErrorHighlighting = isHellLevel; // Always enable for both modes
+        enableConfirmationEffects = false; // alex !isHellLevel; // Disable confirmation effects in Hell Level
         
         Debug.Log($"VisualFeedbackManager: Updated for {(isHellLevel ? "Hell" : "Normal")} level");
     }
@@ -100,15 +100,17 @@ public class VisualFeedbackManager : MonoBehaviour
     
     void OnNumberPlaced(int cellIndex)
     {
-        if (!enableConfirmationEffects || validationContext == null || validationContext.IsHellLevel)
-            return;
+        // alex disable ShowConfirmationEffect
+        return;
+        // if (!enableConfirmationEffects || validationContext == null || validationContext.IsHellLevel)
+        //     return;
         
-        // Show confirmation effect for correct placement in normal levels
-        var cell = GetCellAtIndex(cellIndex);
-        if (cell != null && cell.Number == cell.Correct_number)
-        {
-            StartCoroutine(ShowConfirmationEffect(cellIndex));
-        }
+        // // Show confirmation effect for correct placement in normal levels
+        // var cell = GetCellAtIndex(cellIndex);
+        // if (cell != null && cell.Number == cell.Correct_number)
+        // {
+        //     StartCoroutine(ShowConfirmationEffect(cellIndex));
+        // }
     }
     
     void OnNumberCleared()
@@ -124,12 +126,14 @@ public class VisualFeedbackManager : MonoBehaviour
         
         foreach (int cellIndex in errorCellIndices)
         {
-            if (activeHighlights.ContainsKey(cellIndex))
-            {
-                StopCoroutine(activeHighlights[cellIndex]);
-            }
+            //GameEvents.OnWrongNumberMethod();
+            //if (activeHighlights.ContainsKey(cellIndex))
+            //{
+            //    StopCoroutine(activeHighlights[cellIndex]);
+            //}
             
-            activeHighlights[cellIndex] = StartCoroutine(HighlightErrorCell(cellIndex));
+            //activeHighlights[cellIndex] = StartCoroutine(HighlightErrorCell(cellIndex));
+
         }
         
         Debug.Log($"VisualFeedbackManager: Highlighted {errorCellIndices.Length} error cells");
@@ -198,10 +202,12 @@ public class VisualFeedbackManager : MonoBehaviour
     
     void ShowSuccessEffects()
     {
-        if (!enableConfirmationEffects) return;
+        // alex disable ShowBoardSuccessEffect
+        return;
+        // if (!enableConfirmationEffects) return;
         
-        // Show brief success effect for completed puzzle
-        StartCoroutine(ShowBoardSuccessEffect());
+        // // Show brief success effect for completed puzzle
+        // StartCoroutine(ShowBoardSuccessEffect());
     }
     
     IEnumerator ShowBoardSuccessEffect()
@@ -317,69 +323,70 @@ public class VisualFeedbackManager : MonoBehaviour
     }
     
     // Public methods for external control
-    public void HighlightCell(int cellIndex, Color highlightColor, float duration = 2f)
-    {
-        if (activeHighlights.ContainsKey(cellIndex))
-        {
-            StopCoroutine(activeHighlights[cellIndex]);
-        }
+    // alex mark because they are not used
+    // public void HighlightCell(int cellIndex, Color highlightColor, float duration = 2f)
+    // {
+    //     if (activeHighlights.ContainsKey(cellIndex))
+    //     {
+    //         StopCoroutine(activeHighlights[cellIndex]);
+    //     }
         
-        activeHighlights[cellIndex] = StartCoroutine(HighlightCellWithColor(cellIndex, highlightColor, duration));
-    }
+    //     activeHighlights[cellIndex] = StartCoroutine(HighlightCellWithColor(cellIndex, highlightColor, duration));
+    // }
     
-    IEnumerator HighlightCellWithColor(int cellIndex, Color highlightColor, float duration)
-    {
-        var cell = GetCellAtIndex(cellIndex);
-        if (cell == null) yield break;
+    // IEnumerator HighlightCellWithColor(int cellIndex, Color highlightColor, float duration)
+    // {
+    //     var cell = GetCellAtIndex(cellIndex);
+    //     if (cell == null) yield break;
         
-        Color originalColor = cell.colors.disabledColor;
+    //     Color originalColor = cell.colors.disabledColor;
         
-        // Set highlight color
-        var colors = cell.colors;
-        colors.disabledColor = highlightColor;
-        cell.colors = colors;
+    //     // Set highlight color
+    //     var colors = cell.colors;
+    //     colors.disabledColor = highlightColor;
+    //     cell.colors = colors;
         
-        yield return new WaitForSeconds(duration);
+    //     yield return new WaitForSeconds(duration);
         
-        // Restore original color
-        colors.disabledColor = originalColor;
-        cell.colors = colors;
+    //     // Restore original color
+    //     colors.disabledColor = originalColor;
+    //     cell.colors = colors;
         
-        // Remove from active highlights
-        if (activeHighlights.ContainsKey(cellIndex))
-        {
-            activeHighlights.Remove(cellIndex);
-        }
-    }
+    //     // Remove from active highlights
+    //     if (activeHighlights.ContainsKey(cellIndex))
+    //     {
+    //         activeHighlights.Remove(cellIndex);
+    //     }
+    // }
     
-    public void ClearHighlight(int cellIndex)
-    {
-        if (activeHighlights.ContainsKey(cellIndex))
-        {
-            StopCoroutine(activeHighlights[cellIndex]);
-            activeHighlights.Remove(cellIndex);
+    // public void ClearHighlight(int cellIndex)
+    // {
+    //     if (activeHighlights.ContainsKey(cellIndex))
+    //     {
+    //         StopCoroutine(activeHighlights[cellIndex]);
+    //         activeHighlights.Remove(cellIndex);
             
-            var cell = GetCellAtIndex(cellIndex);
-            if (cell != null)
-            {
-                cell.UpdateSquareColor();
-            }
-        }
-    }
+    //         var cell = GetCellAtIndex(cellIndex);
+    //         if (cell != null)
+    //         {
+    //             cell.UpdateSquareColor();
+    //         }
+    //     }
+    // }
     
-    public void SetErrorHighlighting(bool enabled)
-    {
-        enableErrorHighlighting = enabled;
-        if (!enabled)
-        {
-            ClearAllHighlights();
-        }
-    }
+    // public void SetErrorHighlighting(bool enabled)
+    // {
+    //     enableErrorHighlighting = enabled;
+    //     if (!enabled)
+    //     {
+    //         ClearAllHighlights();
+    //     }
+    // }
     
-    public void SetConfirmationEffects(bool enabled)
-    {
-        enableConfirmationEffects = enabled;
-    }
+    // public void SetConfirmationEffects(bool enabled)
+    // {
+    //     enableConfirmationEffects = enabled;
+    // }
     
     void OnDestroy()
     {

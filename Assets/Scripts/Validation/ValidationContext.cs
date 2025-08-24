@@ -50,10 +50,10 @@ public class ValidationContext : MonoBehaviour
         immediateStrategy = new ImmediateValidationStrategy(sudokuBoard, gridSquares);
         hypothesisStrategy = new HypothesisValidationStrategy(sudokuBoard, gridSquares);
         
+        isInitialized = true;
+        
         // Set current strategy based on game mode
         SwitchStrategy(gameMode);
-        
-        isInitialized = true;
         
         Debug.Log($"ValidationContext initialized for {gameMode} mode");
     }
@@ -96,13 +96,15 @@ public class ValidationContext : MonoBehaviour
         
         // Process the move through current strategy
         var result = currentStrategy.ProcessNumberPlacement(cellIndex, value);
-        
+
         // Handle post-placement logic
-        if (result.Type != ValidationResultType.Error)
-        {
-            currentStrategy.OnNumberPlaced(cellIndex, value);
-        }
-        
+        // alex if (result.Type != ValidationResultType.Error)
+        //{
+        //    currentStrategy.OnNumberPlaced(cellIndex, value);
+        //}
+
+        currentStrategy.OnNumberPlaced(cellIndex, value);
+
         // Only notify listeners for non-deferred results (Hell Level uses deferred validation)
         if (result.Type != ValidationResultType.Deferred)
         {
