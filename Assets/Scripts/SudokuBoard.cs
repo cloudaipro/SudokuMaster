@@ -104,15 +104,7 @@ public class SudokuBoard : MonoBehaviour
             BoardGardientTransiton(true);
         }
 
-        level.GetComponent<Text>().text = GameSettings.Instance.GameMode.GetDescription() + (GameSettings.Instance.GameMode) switch
-        {
-            EGameMode.EASY => "",
-            EGameMode.MEDIUM => "", // $" - level {Setting.Instance.MediumLevel}",
-            EGameMode.HARD => "", // $" - level {Setting.Instance.HardLevel}",
-            EGameMode.EXTREME => "", // $" - level {Setting.Instance.ExtremeLevel}",
-            EGameMode.HELL => "",
-            _ => ""
-        };
+        level.GetComponent<Text>().text = (IsHellLevel()) ? "" : GameSettings.Instance.GameMode.GetDescription();
 
         if (AdManager.Instance != null)
         {
@@ -486,7 +478,13 @@ public class SudokuBoard : MonoBehaviour
         // Update visual appearance after clearing all selection states
         grid_squares_.Select(x => x.GetComponent<SudokuCell>()).ForEach(x => x.UpdateSquareColor());
     }
-    
+    public void Play_Audio(string type)
+    {
+        if (type == "Correct")
+            Correct_Audio.Play();
+        else
+            Wrong_Audio.Play();
+    }
     public bool IsNumberCompletlyPlaced(int number)
     {
         // Count how many times the number appears in the grid
@@ -520,10 +518,27 @@ public class SudokuBoard : MonoBehaviour
     public void OnDidSetNumber(int square_index)
     {
         var cell = grid_squares_[square_index].GetComponent<SudokuCell>();
-        if (!cell.IsCorrectNumberSet()) return;
+        if (this.validationContext.IsHellLevel)
+        {
+            HighlightAllCellsWithNumber(cell.Number);
+            removeNote(square_index);
+        }
+        else
+        {
+            if (cell.IsCorrectNumberSet())
+            {
 
-        HighlightAllCellsWithNumber(cell.Number);
+                HighlightAllCellsWithNumber(cell.Number);
+                removeNote(square_index);
 
+                checkFinishedCells(square_index);
+            }
+        }
+        SaveData();
+    }
+    public void removeNote(int square_index)
+    {
+        var cell = grid_squares_[square_index].GetComponent<SudokuCell>();
         var hLine = LineIndicator.Instance.GetHorizontalLine(square_index);
         var vLine = LineIndicator.Instance.GetVerticalLine(square_index);
         var block = LineIndicator.Instance.GetBlockFlat(square_index);
@@ -533,11 +548,15 @@ public class SudokuBoard : MonoBehaviour
                                   .ForEach(x => x.RemoveNote(cell.Number)));
 
         grid_squares_.Select(x => x.GetComponent<SudokuCell>()).ForEach(x => x.UpdateSquareColor());
+    }
+    public void checkFinishedCells(int square_index)
+    {
+        var hLine = LineIndicator.Instance.GetHorizontalLine(square_index);
+        var vLine = LineIndicator.Instance.GetVerticalLine(square_index);
+        var block = LineIndicator.Instance.GetBlockFlat(square_index);
 
-        Correct_Audio.Play();
         if (!DoCheckCompleted())
         {
-            //Correct_Audio.Play();
             List<SudokuCell[]> finishCells = new List<SudokuCell[]>();
             var hLineObjs = hLine.Select(x => grid_squares_[x].GetComponent<SudokuCell>()).ToArray();
             var vLineObjs = vLine.Select(x => grid_squares_[x].GetComponent<SudokuCell>()).ToArray();
@@ -552,7 +571,7 @@ public class SudokuBoard : MonoBehaviour
                 StartCoroutine(BlockGradientTransition<SudokuCell>(finishCells, board_gradient_colors, 0.6f));//cell_gradient_colors, 0.5f));
                                                                                                               //StartCoroutine(Transition(finishCells, cell_gradient_colors, 0.5f));
 
-            SaveData();
+            //SaveData();
         }
     }
 
@@ -639,6 +658,13 @@ public class SudokuBoard : MonoBehaviour
     public void FastNote()
     {
         if (fastNoteMode) return;
+        
+        // Disable Fast Note feature in Hell Level
+        if (IsHellLevel())
+        {
+            Debug.Log("Fast Note is disabled in Hell Level - use pure logical deduction");
+            return;
+        }
 
         AdManager.Instance.ShowFastNoteRewardAd();
         //GameEvents.GiveFastNoteMethod();

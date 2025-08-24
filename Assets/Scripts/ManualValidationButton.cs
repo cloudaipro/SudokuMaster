@@ -19,13 +19,13 @@ public class ManualValidationButton : MonoBehaviour
     [SerializeField] private Color enabledBackgroundColor = new Color(0.9f, 0.4f, 0f, 1f); // Strong, inviting orange
     [SerializeField] private Color enabledTextColor = Color.white;
     [SerializeField] private Color disabledBackgroundColor = new Color(0.4f, 0.4f, 0.4f, 0.8f); // Neutral gray for disabled state
-    [SerializeField] private Color disabledTextColor = new Color(0.7f, 0.7f, 0.7f, 1f);
+    [SerializeField] private Color disabledTextColor = new Color(0.14f, 0.18f, 0.41f, 1f);
     [SerializeField] private Color loadingBackgroundColor = new Color(0.8f, 0.3f, 0f, 1f); // Slightly darker orange for loading
     [SerializeField] private Color loadingTextColor = Color.white;
     
     [Header("Layout Settings")]
-    [SerializeField] private Vector2 buttonSize = new Vector2(300, 55);
-    [SerializeField] private Vector2 buttonPosition = new Vector2(0, 150); // Lowered to be closer to other controls
+    [SerializeField] private Vector2 buttonSize = new Vector2(300, 100);
+    [SerializeField] private Vector2 buttonPosition = new Vector2(0, -60); // Lowered to be closer to other controls
     
     private SudokuBoard sudokuBoard;
     private ValidationContext validationContext;
@@ -118,7 +118,7 @@ public class ManualValidationButton : MonoBehaviour
         
         // Configure text appearance
         buttonText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        buttonText.fontSize = 20; // Slightly smaller for better fit
+        buttonText.fontSize = 36; // Slightly smaller for better fit
         buttonText.fontStyle = FontStyle.Bold; // Make it bold for impact
         buttonText.color = disabledTextColor;
         buttonText.alignment = TextAnchor.MiddleCenter;

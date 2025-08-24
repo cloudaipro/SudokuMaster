@@ -244,9 +244,11 @@ flowchart TD
 Hell Level represents the pinnacle of Sudoku challenge in SudokuMaster, featuring:
 - **Hypothesis Testing**: Players can place multiple numbers without immediate validation
 - **Manual Validation**: Players choose when to validate their progress
-- **Graded Feedback**: Comprehensive analysis of solution accuracy
-- **No Assistance**: Hints and Fast Notes are disabled
-- **Visual Distinction**: Orange styling for hypothesis numbers
+- **Visual Cell Feedback**: Direct error highlighting with red text instead of intrusive modals
+- **Number Lock Support**: Hold-to-lock functionality with automatic unlock after validation
+- **Streamlined UI**: Removed ValidationResultModal for seamless gameplay experience
+- **Event Integration**: Proper GameEvents firing for all number placements
+- **Visual Distinction**: Orange styling for hypothesis numbers with clear error states
 
 ### Hell Level Initialization Flow
 
@@ -369,7 +371,8 @@ sequenceDiagram
     participant ManualValidationButton as ManualValidationButton.cs
     participant ValidationContext as ValidationContext.cs
     participant HypothesisStrategy as HypothesisValidationStrategy.cs
-    participant ValidationModal as ValidationResultModal.cs
+    participant SudokuCells as SudokuCell.cs (Error Cells)
+    participant NumberLockManager as NumberLockManager.cs
     
     Player->>ManualValidationButton: Click VALIDATE Button
     Note over ManualValidationButton: OnValidateButtonClicked():285-291
@@ -385,25 +388,27 @@ sequenceDiagram
     Note over HypothesisStrategy: Lines 69-84: Count correct/filled cells
     HypothesisStrategy->>HypothesisStrategy: Validate Sudoku rules
     Note over HypothesisStrategy: ValidateSudokuRules():110-148
-    HypothesisStrategy->>HypothesisStrategy: Generate graded feedback
-    Note over HypothesisStrategy: GenerateGradedFeedback():150-179
+    HypothesisStrategy->>HypothesisStrategy: Clear hypothesis flags
+    Note over HypothesisStrategy: UpdateCellErrorStates():92
+    HypothesisStrategy->>SudokuCells: Set Has_Wrong_value = true for errors
+    Note over SudokuCells: Red text styling applied
     
     HypothesisStrategy-->>ValidationContext: ValidationResult with grade
     ValidationContext-->>ManualValidationButton: ValidationResult
+    Note over ValidationContext: Deferred results filtered to prevent modal
     
-    ManualValidationButton->>ValidationModal: ShowValidationResult()
-    Note over ValidationModal: Display graded feedback modal
+    ManualValidationButton->>NumberLockManager: UnlockNumber() if locked
+    Note over ManualValidationButton: Line 300: Automatic unlock after validation
     
     alt Perfect Solution
-        ValidationModal->>Player: 🏆 Hell Level Mastered!
-    else Partial Progress
-        ValidationModal->>Player: Progress feedback with %
+        ManualValidationButton->>Player: Button shows success state
     else Errors Found
-        ValidationModal->>Player: Error count and guidance
+        SudokuCells->>Player: Visual red text feedback on error cells
+        Note over SudokuCells: Direct visual feedback without modal interruption
     end
 ```
 
-*The manual validation process provides comprehensive feedback about the player's progress without immediate penalty.*
+*The streamlined manual validation process provides immediate visual feedback through cell color changes, eliminating modal interruptions while maintaining comprehensive error analysis.*
 
 ### Hell Level UI Component Architecture
 
@@ -415,10 +420,10 @@ graph TB
     
     subgraph "Hell Level UI Components"
         HMI[HellLevelModeIndicator.cs<br/>🔥 HELL LEVEL 🔥<br/>Pulsing Banner]
-        MVB[ManualValidationButton.cs<br/>🔥 VALIDATE Button<br/>State Management]
+        MVB[ManualValidationButton.cs<br/>🔥 VALIDATE Button<br/>State Management + Auto-Unlock]
         SPI[SolutionProgressIndicator.cs<br/>Circular Progress<br/>45/81 Cells]
-        VRM[ValidationResultModal.cs<br/>Graded Feedback<br/>Modal Dialog]
-        VFM[VisualFeedbackManager.cs<br/>Error Highlighting<br/>Hell Theme Colors]
+        VFM[VisualFeedbackManager.cs<br/>Direct Cell Error Highlighting<br/>Red Text Styling]
+        NLM[NumberLockManager.cs<br/>Hold-to-Lock Support<br/>Hell Level Enabled]
     end
     
     subgraph "Integration Points"
@@ -429,27 +434,28 @@ graph TB
     HLUI --> HMI
     HLUI --> MVB
     HLUI --> SPI
-    HLUI --> VRM
     HLUI --> VFM
+    HLUI --> NLM
     
     VC -->|OnStrategyChanged:84| HMI
     VC -->|OnStrategyChanged:84| MVB
-    VC -->|OnValidationResult:107| VRM
+    VC -->|Deferred Result Filter| VFM
     VC -->|Hell Level Mode:129| SC
     
-    SC -->|Orange Styling:37-38| VFM
+    SC -->|Orange Styling:37-38 + Red Error Text| VFM
     MVB -->|Manual Validation| VC
+    MVB -->|Auto-Unlock After Validation:300| NLM
     
     classDef container fill:#f3e5f5
     classDef component fill:#fff3e0
     classDef integration fill:#e8f5e8
     
     class HLUI container
-    class HMI,MVB,SPI,VRM,VFM component
+    class HMI,MVB,SPI,VFM,NLM component
     class VC,SC integration
 ```
 
-*Hell Level UI components are dynamically created and managed through the ValidationContext event system.*
+*Hell Level UI components provide streamlined feedback through direct cell styling and integrated number lock support, eliminating modal interruptions.*
 
 ### Hell Level Cell Visual States
 
@@ -474,28 +480,34 @@ stateDiagram-v2
     
     ValidationRequested --> CorrectConfirmed : Validation success
     ValidationRequested --> ErrorHighlight : Validation error
-    ValidationRequested --> Hypothesis : Continue testing
+    ValidationRequested --> ClearedHypothesis : Continue testing (hypothesis flag cleared)
     
     state CorrectConfirmed {
-        [*] --> GreenStyling
-        GreenStyling --> [*] : Standard correct styling
+        [*] --> StandardStyling
+        StandardStyling --> [*] : Hypothesis flag cleared, normal styling
     }
     
     state ErrorHighlight {
-        [*] --> RedHighlight
-        RedHighlight --> [*] : Hell-themed error colors
+        [*] --> RedTextStyling
+        RedTextStyling --> [*] : Has_Wrong_value = true, red text
     }
     
-    CorrectConfirmed --> [*] : Cell locked
-    ErrorHighlight --> Hypothesis : Player continues
+    state ClearedHypothesis {
+        [*] --> NormalStyling
+        NormalStyling --> [*] : isHypothesisNumber = false
+    }
+    
+    CorrectConfirmed --> [*] : Cell confirmed
+    ErrorHighlight --> ClearedHypothesis : Player corrects error
+    ClearedHypothesis --> Hypothesis : New hypothesis entered
     
     note right of Hypothesis : SetAsHypothesis() lines 594-598, Visual distinction from confirmed numbers
     note right of ValidationRequested : ValidateCompleteBoard() line 60, Comprehensive board analysis
 ```
 
-*Hell Level cells maintain hypothesis state with distinct visual feedback until validation confirms or rejects the placement.*
+*Hell Level cells use hypothesis state for temporary styling, with validation clearing hypothesis flags and applying direct error styling through Has_Wrong_value property.*
 
-### Hell Level Graded Feedback System
+### Hell Level Visual Feedback System
 
 ```mermaid
 flowchart TD
@@ -507,45 +519,82 @@ flowchart TD
     CountCells --> CalcAccuracy[Calculate accuracy percentage]
     ValidateRules --> FindErrors[Identify duplicate/conflict cells]
     
-    CalcAccuracy --> CheckCompletion{All 81 cells filled correctly?}
-    FindErrors --> CheckCompletion
+    CalcAccuracy --> ClearFlags[Clear hypothesis flags from all cells]
+    FindErrors --> ClearFlags
     
-    CheckCompletion -->|Yes| Perfect[🏆 Perfect Solution<br/>Hell Level Mastered!]
-    CheckCompletion -->|No| CheckNoErrors{No errors but incomplete?}
+    ClearFlags --> ApplyErrorStates[Set Has_Wrong_value = true for error cells]
+    ApplyErrorStates --> UpdateVisuals[Update cell colors and text styling]
     
-    CheckNoErrors -->|Yes| Progress[✅ Excellent Progress<br/>X% complete, no errors]
-    CheckNoErrors -->|No| CheckAccuracy{Accuracy >= 90%?}
+    UpdateVisuals --> CheckCompletion{All 81 cells filled correctly?}
     
-    CheckAccuracy -->|Yes| Strong[⚡ Strong Work<br/>X% accuracy, Y errors]
-    CheckAccuracy -->|No| CheckGood{Accuracy >= 70%?}
+    CheckCompletion -->|Yes| Perfect[🏆 Perfect Solution<br/>Game completion triggered]
+    CheckCompletion -->|No| VisualFeedback[Red text on error cells<br/>Player sees immediate feedback]
     
-    CheckGood -->|Yes| Good[💪 Good Progress<br/>X% accuracy, Y conflicts]
-    CheckGood -->|No| CheckPartial{Accuracy >= 50%?}
+    Perfect --> UnlockNumbers[Auto-unlock locked numbers]
+    VisualFeedback --> UnlockNumbers
     
-    CheckPartial -->|Yes| Partial[🤔 Partially Correct<br/>X% accuracy, needs attention]
-    CheckPartial -->|No| Multiple[🔄 Multiple Conflicts<br/>Y cells need revision]
+    UnlockNumbers --> ContinuePlay[Player continues with visual guidance]
     
-    Perfect --> DisplayModal[Show ValidationResultModal]
-    Progress --> DisplayModal
-    Strong --> DisplayModal
-    Good --> DisplayModal
-    Partial --> DisplayModal
-    Multiple --> DisplayModal
-    
-    DisplayModal --> End([Player continues or completes])
+    ContinuePlay --> End([Seamless gameplay continuation])
+    Perfect --> End
     
     classDef perfect fill:#e8f5e8
-    classDef good fill:#fff3e0
-    classDef needs fill:#ffebee
+    classDef visual fill:#fff3e0
     classDef process fill:#f5f5f5
     
-    class Perfect,Progress perfect
-    class Strong,Good good
-    class Partial,Multiple needs
-    class Start,CountCells,ValidateRules,CalcAccuracy,FindErrors,CheckCompletion,CheckNoErrors,CheckAccuracy,CheckGood,CheckPartial,DisplayModal,End process
+    class Perfect perfect
+    class VisualFeedback,UpdateVisuals,ApplyErrorStates visual
+    class Start,CountCells,ValidateRules,CalcAccuracy,FindErrors,ClearFlags,CheckCompletion,UnlockNumbers,ContinuePlay,End process
 ```
 
-*The graded feedback system provides nuanced evaluation of Hell Level progress, encouraging continued experimentation.*
+*The visual feedback system provides immediate, non-intrusive error highlighting with automatic number unlock, maintaining gameplay flow without modal interruptions.*
+
+### Hell Level Recent Improvements
+
+The Hell Level system has undergone several key architectural improvements:
+
+#### Streamlined User Experience
+- **Removed ValidationResultModal**: Eliminated intrusive modal popups that interrupted gameplay flow
+- **Direct Cell Feedback**: Error highlighting now appears directly on cells with red text styling
+- **Deferred Result Filtering**: ValidationContext now filters deferred results to prevent automatic modal display
+- **Seamless Validation**: Manual validation provides immediate visual feedback without modal interruptions
+
+#### Number Lock Integration
+- **Restored Hold-to-Lock**: Number lock functionality (hold button to lock number) is now available in Hell Level
+- **Auto-Unlock After Validation**: Locked numbers are automatically unlocked after manual validation for clean UX
+- **Hell Level Compatibility**: NumberButton and NumberLockManager restrictions removed for Hell Level
+
+#### Enhanced Event Integration
+- **GameEvents Integration**: Hell Level now properly fires GameEvents.didSetNumberMethod for number placements
+- **OnNumberUsed Events**: Fixed event firing in Hell Level hypothesis placement path (SudokuCell.cs:316-317)
+- **Consistent Event Flow**: All number placements now trigger appropriate game events regardless of validation strategy
+
+#### Technical Architecture Improvements
+```mermaid
+flowchart LR
+    subgraph "Before"
+        A[Place Number] --> B[Store Hypothesis]
+        B --> C[Manual Validate]
+        C --> D[Show Modal]
+        D --> E[Player Dismisses Modal]
+        E --> F[Continue Playing]
+    end
+    
+    subgraph "After"
+        G[Place Number] --> H[Store Hypothesis + Fire Events]
+        H --> I[Manual Validate]
+        I --> J[Clear Hypothesis Flags]
+        J --> K[Apply Red Text to Errors]
+        K --> L[Auto-Unlock Numbers]
+        L --> M[Continue Playing Seamlessly]
+    end
+    
+    classDef before fill:#ffebee
+    classDef after fill:#e8f5e8
+    
+    class A,B,C,D,E,F before
+    class G,H,I,J,K,L,M after
+```
 
 ### Hell Level Performance Optimizations
 
@@ -792,9 +841,10 @@ flowchart TD
             WaitManualValidation --> ManualValidate{Player clicks VALIDATE?}
             ManualValidate -->|No| HellGameplay
             ManualValidate -->|Yes| ValidateBoard[ValidateCompleteBoard<br/>HVS Line 60-108]
-            ValidateBoard --> GradedFeedback[Generate graded feedback<br/>HVS Line 94]
-            GradedFeedback --> ShowModal[Display ValidationResultModal]
-            ShowModal --> CheckHellComplete{Perfect Solution?}
+            ValidateBoard --> ClearHypothesis[Clear hypothesis flags<br/>UpdateCellErrorStates Line 92]
+            ClearHypothesis --> ApplyErrors[Set Has_Wrong_value for errors<br/>Direct cell visual feedback]
+            ApplyErrors --> UnlockNumbers[Auto-unlock locked numbers<br/>MVB Line 300]
+            UnlockNumbers --> CheckHellComplete{Perfect Solution?}
             CheckHellComplete -->|No| HellGameplay
             CheckHellComplete -->|Yes| HellVictory[Hell Level Mastered]
         end
@@ -843,8 +893,9 @@ sequenceDiagram
     Note over VC: ProcessMove():89-110
     
     VC->>VC: currentStrategy.ProcessNumberPlacement()
-    VC->>MVB: OnValidationResult(result)
-    Note over MVB: OnValidationResult():312-336
+    VC->>VC: Filter deferred results to prevent modal
+    Note over VC: ProcessMove():102-104 - Only fires event for non-deferred results
+    VC->>MVB: OnValidationResult(result) - Only for immediate validation
     
     Note over MVB: Manual validation requested
     MVB->>VC: ValidateBoard()
@@ -954,7 +1005,9 @@ SudokuMaster implements a sophisticated dual-mode architecture:
 ### Hell Level Innovation
 - **Hypothesis Testing**: Deferred validation allowing experimentation  
 - **Manual Validation**: Player-controlled comprehensive board analysis
-- **Graded Feedback**: Nuanced progress reporting with percentage accuracy
+- **Visual Cell Feedback**: Direct error highlighting with red text instead of modal popups
+- **Number Lock Integration**: Restored hold-to-lock functionality with automatic unlock after validation
+- **Streamlined Experience**: Removed intrusive modals in favor of immediate visual feedback
 - **Advanced UI**: Dynamic components created specifically for Hell Level
 - **Performance Optimization**: Caching and batch processing for complex operations
 

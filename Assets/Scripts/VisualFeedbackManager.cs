@@ -56,8 +56,8 @@ public class VisualFeedbackManager : MonoBehaviour
         }
         
         // Subscribe to game events for immediate feedback
-        GameEvents.OnDidSetNumber += OnNumberPlaced;
-        GameEvents.OnClearNumber += OnNumberCleared;
+        //alex GameEvents.OnDidSetNumber += OnNumberPlaced;
+        //alex GameEvents.OnClearNumber += OnNumberCleared;
         
         Debug.Log("VisualFeedbackManager: Initialized successfully");
     }
@@ -123,7 +123,9 @@ public class VisualFeedbackManager : MonoBehaviour
     {
         if (errorCellIndices == null || errorCellIndices.Length == 0)
             return;
-        
+
+        sudokuBoard.Play_Audio("Wrong");
+
         foreach (int cellIndex in errorCellIndices)
         {
             //GameEvents.OnWrongNumberMethod();
@@ -203,6 +205,7 @@ public class VisualFeedbackManager : MonoBehaviour
     void ShowSuccessEffects()
     {
         // alex disable ShowBoardSuccessEffect
+        sudokuBoard.Play_Audio("Correct");
         return;
         // if (!enableConfirmationEffects) return;
         
@@ -397,8 +400,8 @@ public class VisualFeedbackManager : MonoBehaviour
             validationContext.OnStrategyChanged -= OnStrategyChanged;
         }
         
-        GameEvents.OnDidSetNumber -= OnNumberPlaced;
-        GameEvents.OnClearNumber -= OnNumberCleared;
+        // alex GameEvents.OnDidSetNumber -= OnNumberPlaced;
+        // alex GameEvents.OnClearNumber -= OnNumberCleared;
         
         // Stop all active coroutines
         ClearAllHighlights();
