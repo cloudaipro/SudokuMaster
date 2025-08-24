@@ -693,6 +693,7 @@ public class SudokuBoard : MonoBehaviour
         Dispatcher.RunOnMainThread(() =>
         {
             gameOverDialog.SetActive(false);
+            SetGridFromFile();
             Clock.Instance.StartClock();
         });
     }

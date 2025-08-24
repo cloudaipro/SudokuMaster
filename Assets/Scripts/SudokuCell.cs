@@ -339,7 +339,7 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
                             Has_Wrong_value = true;
                             isHypothesisNumber = false;
                             //GameEvents.OnNumberUsedMethod(number);
-                            //GameEvents.OnWrongNumberMethod();
+                            GameEvents.OnWrongNumberMethod();
                         }
                     }
                 }
