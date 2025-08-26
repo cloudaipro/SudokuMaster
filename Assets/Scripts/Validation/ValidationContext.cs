@@ -135,8 +135,16 @@ public class ValidationContext : MonoBehaviour
     public bool ShouldProvideImmediateFeedback => currentStrategy?.ShouldProvideImmediateFeedback() ?? false;
     public bool ShouldUpdateLivesSystem => currentStrategy?.ShouldUpdateLivesSystem() ?? false;
     public bool ShouldPlayAudio => currentStrategy?.ShouldPlayAudio() ?? false;
-    
+
     // Hell Level specific methods
+    public ValidationResult SetHypothesisPlacements(int cellIndex, int value)
+    {
+        if (IsHellLevel && hypothesisStrategy != null)
+        {
+            return hypothesisStrategy.ProcessNumberPlacement(cellIndex, value);
+        }
+        return ValidationResult.Error("Not HellLevel");
+    }
     public List<CellPlacement> GetHypothesisPlacements()
     {
         if (IsHellLevel && hypothesisStrategy != null)
@@ -226,6 +234,15 @@ public class ValidationContext : MonoBehaviour
     {
         currentStrategy?.Reset();
         Debug.Log("ValidationContext reset");
+    }
+    
+    void OnDestroy()
+    {
+        // Properly dispose of strategies to prevent memory leaks
+        if (hypothesisStrategy != null && hypothesisStrategy is HypothesisValidationStrategy hStrategy)
+        {
+            hStrategy.Dispose();
+        }
     }
     
     void OnDisable()

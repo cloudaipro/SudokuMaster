@@ -30,7 +30,6 @@ public class ManualValidationButton : MonoBehaviour
     private SudokuBoard sudokuBoard;
     private ValidationContext validationContext;
     private bool isHellLevel = false;
-    private bool hasChanges = false;
     private bool isValidating = false;
     
     
@@ -228,7 +227,7 @@ public class ManualValidationButton : MonoBehaviour
                 StartCoroutine(RotateLoadingIndicator());
             }
         }
-        else if (hasChanges)
+        else if (HasChanges())
         {
             // Enabled state
             buttonText.text = enabledText;
@@ -320,13 +319,19 @@ public class ManualValidationButton : MonoBehaviour
         // Update button state based on result
         switch (result.Type)
         {
+            case ValidationResultType.PartialSuccess:
             case ValidationResultType.Success:
-                hasChanges = false;
+                // For complete success, clear hypothesis to enable button reset
+                if (validationContext != null)
+                {
+                    validationContext.ClearHypothesis();
+                    // Update visuals immediately to reflect cleared state
+                    UpdateButtonVisuals();
+                }
                 break;
                 
-            case ValidationResultType.PartialSuccess:
             case ValidationResultType.Error:
-                // Keep changes flag as is - player can continue working
+                // Keep hypothesis placements - player can continue working
                 break;
         }
     }
@@ -336,7 +341,7 @@ public class ManualValidationButton : MonoBehaviour
     {
         if (isHellLevel)
         {
-            SetHasChanges(true);
+            UpdateButtonVisuals();
         }
     }
     
@@ -344,14 +349,23 @@ public class ManualValidationButton : MonoBehaviour
     {
         if (isHellLevel)
         {
-            SetHasChanges(true);
+            UpdateButtonVisuals();
         }
+    }
+    
+    // Check if there are hypothesis placements
+    private bool HasChanges()
+    {
+        if (!isHellLevel || validationContext == null)
+            return false;
+            
+        return validationContext.GetHypothesisCount() > 0;
     }
     
     // Public methods for external control
     public void SetHasChanges(bool changes)
     {
-        hasChanges = changes;
+        // This method is now deprecated - changes are determined by hypothesis count
         if (isHellLevel)
         {
             UpdateButtonVisuals();
@@ -387,12 +401,16 @@ public class ManualValidationButton : MonoBehaviour
         {
             validationButton.onClick.RemoveAllListeners();
         }
+
+        GameEvents.OnDidSetNumber -= OnCellChanged;
+        GameEvents.OnClearNumber -= OnCellCleared;
     }
     
     #if UNITY_EDITOR
     [Header("Debug Info (Editor Only)")]
     [SerializeField] private bool debugIsHellLevel;
     [SerializeField] private bool debugHasChanges;
+    [SerializeField] private int debugHypothesisCount;
     [SerializeField] private bool debugIsValidating;
     
     void Update()
@@ -400,7 +418,8 @@ public class ManualValidationButton : MonoBehaviour
         if (Application.isEditor)
         {
             debugIsHellLevel = isHellLevel;
-            debugHasChanges = hasChanges;
+            debugHasChanges = HasChanges();
+            debugHypothesisCount = validationContext?.GetHypothesisCount() ?? 0;
             debugIsValidating = isValidating;
         }
     }

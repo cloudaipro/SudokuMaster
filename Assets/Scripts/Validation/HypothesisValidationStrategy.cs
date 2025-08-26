@@ -28,6 +28,9 @@ public class HypothesisValidationStrategy : IValidationStrategy
         sudokuBoard = board;
         gridSquares = squares;
         hypothesisPlacements = new List<CellPlacement>();
+        
+        // Subscribe to clear number event to handle hypothesis cleanup
+        GameEvents.OnClearNumber += OnClearNumber;
     }
 
     public ValidationResult ProcessNumberPlacement(int cellIndex, int value)
@@ -242,6 +245,41 @@ public class HypothesisValidationStrategy : IValidationStrategy
     public int GetHypothesisCount()
     {
         return hypothesisPlacements.Count;
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe from events to prevent memory leaks
+        GameEvents.OnClearNumber -= OnClearNumber;
+    }
+
+    private void OnClearNumber()
+    {
+        // Find which cells have been cleared and remove them from hypothesis placements
+        var cellsToRemove = new List<CellPlacement>();
+        
+        foreach (var placement in hypothesisPlacements)
+        {
+            if (placement.cellIndex >= 0 && placement.cellIndex < gridSquares.Count)
+            {
+                var cell = gridSquares[placement.cellIndex].GetComponent<SudokuCell>();
+                if (cell != null && cell.Number == 0)
+                {
+                    cellsToRemove.Add(placement);
+                }
+            }
+        }
+        
+        // Remove cleared cells from hypothesis tracking
+        foreach (var placement in cellsToRemove)
+        {
+            hypothesisPlacements.Remove(placement);
+        }
+        
+        if (cellsToRemove.Count > 0)
+        {
+            Debug.Log($"HypothesisValidationStrategy: Removed {cellsToRemove.Count} cleared cells from hypothesis tracking");
+        }
     }
 
     private void UpdateCellErrorStates(List<SudokuCell> allCells, List<int> errorCells)

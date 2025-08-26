@@ -191,11 +191,12 @@ public class SudokuBoard : MonoBehaviour
         var solved_data = grid_squares_.Select(x => x.GetComponent<SudokuCell>().Correct_number).ToArray();
         var unsolved_data = grid_squares_.Select(x => x.GetComponent<SudokuCell>().Number).ToArray();
         var isHypothesisNumberFlags = grid_squares_.Select(x => x.GetComponent<SudokuCell>().isHypothesisNumber).ToArray();
+        var hasDefaultFlags = grid_squares_.Select(x => x.GetComponent<SudokuCell>().Has_default_value).ToArray();
         Config.SaveBoardData(new SudokuData.SudokuBoardData(unsolved_data, solved_data),
                             GameSettings.Instance.GameMode, GameSettings.Instance.Level,
                            selected_dataIdx, Lives.Instance.error_number,
-                           (fastNoteMode && backupGridNote != null) ? backupGridNote : GetGridNotes(),
-                           grid_squares_.Select(x => x.GetComponent<SudokuCell>().Has_default_value).ToArray(), noteHintMode, isHypothesisNumberFlags);
+                           (fastNoteMode && backupGridNote != null) ? backupGridNote : GetGridNotes(), hasDefaultFlags
+                           , noteHintMode, isHypothesisNumberFlags);
     }
 
 
@@ -256,13 +257,16 @@ public class SudokuBoard : MonoBehaviour
         var gameProgress = Config.LoadBoardData();
         GameSettings.Instance.GameMode = gameProgress.game_Mode;
         selected_dataIdx = gameProgress.selected_index_at_dataOfLevel;
-        setCellData(new SudokuData.SudokuBoardData(gameProgress.unsolved, gameProgress.solved), gameProgress.isHypothesisNumberFlags);
+        setCellData(new SudokuData.SudokuBoardData(gameProgress.unsolved, gameProgress.solved));
         SetGridNotes(gameProgress.grid_notes);
         gameProgress.hasDefaultFlags.ForEachWithIndex((hasDefaultFlag, idx) =>
         {
             grid_squares_[idx].GetComponent<SudokuCell>().Also(cell =>
             {
                 cell.Has_default_value = hasDefaultFlag;
+                cell.isHypothesisNumber = gameProgress.isHypothesisNumberFlags[idx];
+                if (cell.isHypothesisNumber)
+                    validationContext.SetHypothesisPlacements(idx, cell.Number);
                 cell.UpdateSquareColor();
             });
         });
@@ -355,7 +359,7 @@ public class SudokuBoard : MonoBehaviour
         if (level == "Easy")
         {
             var data = Generator.Sudoku_Generator("Easy");
-            setCellData(new SudokuData.SudokuBoardData(data.unsolved, data.solved), new bool[81]);
+            setCellData(new SudokuData.SudokuBoardData(data.unsolved, data.solved));
         }
         else
         {
@@ -363,10 +367,10 @@ public class SudokuBoard : MonoBehaviour
             selected_dataIdx = Random.Range(0, dataOfLevel.Count);
             var data = dataOfLevel[selected_dataIdx];
             data.ShuffleNumber();
-            setCellData(data, new bool[81]);
+            setCellData(data);
         }
     }
-    private void setCellData(SudokuData.SudokuBoardData data, bool []isHypothesisNumberFlags)
+    private void setCellData(SudokuData.SudokuBoardData data)
     {
         SudokuCell cell;
         var sub_text_value = new int[9] { 9, 9, 9, 9, 9, 9, 9, 9, 9 };
@@ -377,10 +381,11 @@ public class SudokuBoard : MonoBehaviour
             cell.SetNumber(data.unsolved_data[i]);
             //cell.Correct_number = data.solved_data[i];
             cell.SetCorrectNumber(data.solved_data[i]);
-            cell.isHypothesisNumber = isHypothesisNumberFlags[i];
             cell.Has_default_value = data.unsolved_data[i] != 0;
-            if (cell.Number >0)
+            if (cell.Number > 0)
+            {
                 sub_text_value[cell.Number - 1] -= 1;
+            }
 
             pos = LineIndicator.Instance.GetCellPosition(i);
             cell.Row_index = pos.r;
