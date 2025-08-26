@@ -12,6 +12,8 @@ public class SudokuNote : MonoBehaviour
         get => _bSetted;
         set {
             _bSetted = value;
+            if (value == true)
+                bManualRemoved = false;
             gameObject.SetActive(value);
         }
     }
@@ -38,10 +40,18 @@ public class SudokuNote : MonoBehaviour
         }
     }
 
+    public bool bManualRemoved { get; set; } = false;
     public Color HighlightBGColor = Color.clear;
     public Color AlarmBGColor = Color.red;
     public Color TextColor = Color.gray;
     public Color HighlightTextColor = Color.white;
+
+    public int _iNote = 0;
+    public int iNote { get => _iNote; }
+    public void Start()
+    {
+        _iNote = int.Parse(Note.text);
+    }
 
     public override string ToString()
     {

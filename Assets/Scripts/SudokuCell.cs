@@ -68,7 +68,7 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
     
     // Hell Level support
     private ValidationContext validationContext;
-    private bool isHypothesisNumber = false;
+    public bool isHypothesisNumber { get; set; } = false;
 
     void Start()
     {
@@ -123,7 +123,7 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
                 int lockedNumber = lockManager.GetLockedNumber();
                 
                 // Only input if the cell is empty or has the wrong value
-                if (Number == 0 || Has_Wrong_value)
+                if (Number == 0) // alex 0826 2025 || Has_Wrong_value)
                 {
                     GameEvents.UpdateSquareNumberMethod(lockedNumber);
                 }
@@ -209,7 +209,7 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
         //    textObj.text = " ";
         //});
     }
-    private void SetNoteSingleNumberValue(int value, bool force_update = false)
+    private void SetNoteSingleNumberValue(int value, bool force_update = false, bool bManualRemoved = false)
     {
         if (!note_active && !force_update) return;
         if (value <= 0) return;
@@ -217,9 +217,14 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
         number_notes[value - 1].GetComponent<SudokuNote>().Also(note =>
         {
             if (note.bSetted == false || force_update)
+            {
                 note.bSetted = true;
+            }
             else
+            {
                 note.bSetted = false;  // clear when press note again
+                note.bManualRemoved = bManualRemoved;
+            }
         });
 
         //var textObj = number_notes[value - 1].GetComponent<Text>();
@@ -228,6 +233,10 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
         //    textObj.text = value.ToString();
         //else // clear when press note again
         //    textObj.text = " ";
+    }
+    public List<int> getRemovedNotes()
+    {
+        return number_notes.Select(x => x.GetComponent<SudokuNote>()).Where(x => x.bManualRemoved).Select(x => x.iNote).ToList();
     }
     public void RemoveNote(int value) => number_notes[value - 1].GetComponent<SudokuNote>().bSetted = false; //GetComponent<Text>().text = " ";
     public void SetCellNotes(List<int> notes) => notes.ForEach(value => SetNoteSingleNumberValue(value, true));
@@ -293,7 +302,7 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
         {
             if (note_active && !Has_Wrong_value)
             {
-                SetNoteSingleNumberValue(number);
+                SetNoteSingleNumberValue(number, false, true);
             }
             else if (!note_active)
             {
@@ -306,6 +315,7 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
                 // Use ValidationContext if available, otherwise use traditional logic
                 if (validationContext != null && validationContext.IsInitialized)
                 {
+                    isHypothesisNumber = validationContext.IsHellLevel;
                     // Process move through ValidationContext (Strategy Pattern)
                     ValidationResult result = validationContext.ProcessMove(Cell_index, number);
                     
@@ -313,7 +323,6 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
                     if (validationContext.IsHellLevel)
                     {
                         // Hell Level: Mark as hypothesis number
-                        isHypothesisNumber = true;
                         Has_Wrong_value = false; // Don't mark as wrong in hypothesis mode
                         
                         // Still track number usage for UI updates (sub_value decrements)
@@ -328,7 +337,6 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
                         if (result.Type == ValidationResultType.Success)
                         {
                             Has_Wrong_value = false;
-                            isHypothesisNumber = false;
                             ClearupAllNotes();
                             //GameEvents.didSetNumberMethod(Cell_index);
                             //GameEvents.OnNumberUsedMethod(number);
@@ -337,9 +345,8 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
                         else
                         {
                             Has_Wrong_value = true;
-                            isHypothesisNumber = false;
                             //GameEvents.OnNumberUsedMethod(number);
-                            GameEvents.OnWrongNumberMethod();
+                            //GameEvents.OnWrongNumberMethod();
                         }
                     }
                 }
@@ -396,9 +403,7 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
             colors.disabledColor = (bHintMode) ? (bHilightedCellInHintMode) ? HintMode_Focus_Color : HintMode_Indicated_Color
                                                : Indicated_Color;
         }
-        // else if (isHypothesisNumber && Number != 0) {
-        //     colors.disabledColor = Hypothesis_Color; // Orange background for hypothesis numbers
-        // }
+
         this.colors = colors;
 
         // note color

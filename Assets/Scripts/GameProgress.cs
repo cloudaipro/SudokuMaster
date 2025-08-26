@@ -15,5 +15,6 @@ public class GameProgress
     public int[] unsolved;
     public int[] solved;
     public bool[] hasDefaultFlags;
+    public bool[] isHypothesisNumberFlags;
     public bool noteHintMode;
 }

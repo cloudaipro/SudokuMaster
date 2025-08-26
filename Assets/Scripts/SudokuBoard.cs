@@ -190,11 +190,12 @@ public class SudokuBoard : MonoBehaviour
     {
         var solved_data = grid_squares_.Select(x => x.GetComponent<SudokuCell>().Correct_number).ToArray();
         var unsolved_data = grid_squares_.Select(x => x.GetComponent<SudokuCell>().Number).ToArray();
+        var isHypothesisNumberFlags = grid_squares_.Select(x => x.GetComponent<SudokuCell>().isHypothesisNumber).ToArray();
         Config.SaveBoardData(new SudokuData.SudokuBoardData(unsolved_data, solved_data),
                             GameSettings.Instance.GameMode, GameSettings.Instance.Level,
                            selected_dataIdx, Lives.Instance.error_number,
                            (fastNoteMode && backupGridNote != null) ? backupGridNote : GetGridNotes(),
-                           grid_squares_.Select(x => x.GetComponent<SudokuCell>().Has_default_value).ToArray(), noteHintMode);
+                           grid_squares_.Select(x => x.GetComponent<SudokuCell>().Has_default_value).ToArray(), noteHintMode, isHypothesisNumberFlags);
     }
 
 
@@ -255,7 +256,7 @@ public class SudokuBoard : MonoBehaviour
         var gameProgress = Config.LoadBoardData();
         GameSettings.Instance.GameMode = gameProgress.game_Mode;
         selected_dataIdx = gameProgress.selected_index_at_dataOfLevel;
-        setCellData(new SudokuData.SudokuBoardData(gameProgress.unsolved, gameProgress.solved));
+        setCellData(new SudokuData.SudokuBoardData(gameProgress.unsolved, gameProgress.solved), gameProgress.isHypothesisNumberFlags);
         SetGridNotes(gameProgress.grid_notes);
         gameProgress.hasDefaultFlags.ForEachWithIndex((hasDefaultFlag, idx) =>
         {
@@ -354,7 +355,7 @@ public class SudokuBoard : MonoBehaviour
         if (level == "Easy")
         {
             var data = Generator.Sudoku_Generator("Easy");
-            setCellData(new SudokuData.SudokuBoardData(data.unsolved, data.solved));
+            setCellData(new SudokuData.SudokuBoardData(data.unsolved, data.solved), new bool[81]);
         }
         else
         {
@@ -362,10 +363,10 @@ public class SudokuBoard : MonoBehaviour
             selected_dataIdx = Random.Range(0, dataOfLevel.Count);
             var data = dataOfLevel[selected_dataIdx];
             data.ShuffleNumber();
-            setCellData(data);
+            setCellData(data, new bool[81]);
         }
     }
-    private void setCellData(SudokuData.SudokuBoardData data)
+    private void setCellData(SudokuData.SudokuBoardData data, bool []isHypothesisNumberFlags)
     {
         SudokuCell cell;
         var sub_text_value = new int[9] { 9, 9, 9, 9, 9, 9, 9, 9, 9 };
@@ -376,6 +377,7 @@ public class SudokuBoard : MonoBehaviour
             cell.SetNumber(data.unsolved_data[i]);
             //cell.Correct_number = data.solved_data[i];
             cell.SetCorrectNumber(data.solved_data[i]);
+            cell.isHypothesisNumber = isHypothesisNumberFlags[i];
             cell.Has_default_value = data.unsolved_data[i] != 0;
             if (cell.Number >0)
                 sub_text_value[cell.Number - 1] -= 1;
@@ -446,7 +448,7 @@ public class SudokuBoard : MonoBehaviour
         
         // Then, set DesiredNumnber only for cells that contain the target number
         grid_squares_.Select(y => y.GetComponent<SudokuCell>())
-                          .Where(y => y.Number == number && (y.Has_default_value || y.IsCorrectNumberSet()))
+                          //.Where(y => y.Number == number && (y.Has_default_value || y.IsCorrectNumberSet()))
                           .ForEach(y => y.DesiredNumnber = number);
                           
         // CRITICAL: Update visual appearance after setting highlight flags
@@ -504,6 +506,7 @@ public class SudokuBoard : MonoBehaviour
     
     public void OnWillSetNumber(int square_index, int value)
     {
+        /* alex 0826 2025
         if (fastNoteMode && backupGridNote != null)
         {
             //grid_squares_[square_index].GetComponent<SudokuCell>().Also(cell =>
@@ -514,6 +517,7 @@ public class SudokuBoard : MonoBehaviour
             backupGridNote = null;
             //});
         }
+        */
     }
     public void OnDidSetNumber(int square_index)
     {
@@ -623,6 +627,11 @@ public class SudokuBoard : MonoBehaviour
                  }
             }
         }
+        if (fastNoteMode)
+        {
+            currFastNotesData = GetAllPossibleNotes(true);
+            SetGridNotes(currFastNotesData);
+        }
     }
 
     private void CheckBoardCompleted()
@@ -648,36 +657,42 @@ public class SudokuBoard : MonoBehaviour
 
     private List<int> generatePossibleNotes(SudokuCell cell)
     {
-        var allNumberShowedInRelatedCells = LineIndicator.Instance.GetAllRelatedSudokuCell(cell.Cell_index)
+        var allNumbersShowedInRelatedCells = LineIndicator.Instance.GetAllRelatedSudokuCell(cell.Cell_index)
                                                   .Select(x => grid_squares_[x].GetComponent<SudokuCell>())
-                                                  .Where(x => x.Number > 0 && x.IsCorrectNumberSet())
+                                                  .Where(x => x.Number > 0 && (x.IsCorrectNumberSet() || x.IsHypothesisNumber()))
                                                   .Select(x => x.Number).Distinct();
-        return Enumerable.Range(1, 9).ToArray().Except(allNumberShowedInRelatedCells).ToList();
+        return Enumerable.Range(1, 9).ToArray().Except(allNumbersShowedInRelatedCells).ToList();
     }
 
     public void FastNote()
     {
-        if (fastNoteMode) return;
+        //if (fastNoteMode) return;
         
         // Disable Fast Note feature in Hell Level
-        if (IsHellLevel())
-        {
-            Debug.Log("Fast Note is disabled in Hell Level - use pure logical deduction");
-            return;
-        }
+        //if (IsHellLevel())
+        //{
+        //    Debug.Log("Fast Note is disabled in Hell Level - use pure logical deduction");
+        //    return;
+        //}
 
         AdManager.Instance.ShowFastNoteRewardAd();
         //GameEvents.GiveFastNoteMethod();
     }
 
-    private Dictionary<int, List<int>> GetAllPossibleNotes()
+    private Dictionary<int, List<int>> GetAllPossibleNotes(bool bSkipManualRemoved = false)
     {
         Dictionary<int, List<int>> notes = new Dictionary<int, List<int>>();
         grid_squares_.Select(x => x.GetComponent<SudokuCell>())
                      .Where(x => x.IsCorrectNumberSet() == false) //x.Number == 0)
                      .ForEach(x =>
                      {
-                         notes.Add(x.Cell_index, generatePossibleNotes(x));
+                         var possibleNotes = generatePossibleNotes(x);
+                         if (bSkipManualRemoved)
+                         {
+                             var removedNotes = x.getRemovedNotes();
+                             possibleNotes = possibleNotes.Except(removedNotes).ToList();
+                         }
+                         notes.Add(x.Cell_index, possibleNotes);
                      });
         return notes;
     }
@@ -710,6 +725,8 @@ public class SudokuBoard : MonoBehaviour
 
                 if (NoteButton.Instance.Active)
                     NoteButton.Instance.ToggleActive();
+
+                grid_squares_.Select(x => x.GetComponent<SudokuCell>()).ForEach(x => x.UpdateSquareColor());
             }
         });
     }
@@ -1554,22 +1571,22 @@ public class SudokuBoard : MonoBehaviour
         }
     }
 
-    private Dictionary<int, List<int>> GetPossibleNotesInHouse(SudokuCell[] house)
-    {
-        Dictionary<int, List<int>> notes = new Dictionary<int, List<int>>();
-        grid_squares_.Select(x => x.GetComponent<SudokuCell>())
-                     .Where(x => x.IsCorrectNumberSet() == false)
-                     .ForEach(x =>
-                     {
-                         notes.Add(x.Cell_index, x.GetSquareNotes());  //generatePossibleNotes(x));
-                     });
-        house.Where(x => x.IsCorrectNumberSet() == false)
-            .ForEach(x =>
-            {
-                notes[x.Cell_index] = generatePossibleNotes(x);
-            });
-        return notes;
-    }
+    //private Dictionary<int, List<int>> GetPossibleNotesInHouse(SudokuCell[] house)
+    //{
+    //    Dictionary<int, List<int>> notes = new Dictionary<int, List<int>>();
+    //    grid_squares_.Select(x => x.GetComponent<SudokuCell>())
+    //                 .Where(x => x.IsCorrectNumberSet() == false)
+    //                 .ForEach(x =>
+    //                 {
+    //                     notes.Add(x.Cell_index, x.GetSquareNotes());  //generatePossibleNotes(x));
+    //                 });
+    //    house.Where(x => x.IsCorrectNumberSet() == false)
+    //        .ForEach(x =>
+    //        {
+    //            notes[x.Cell_index] = generatePossibleNotes(x);
+    //        });
+    //    return notes;
+    //}
     private void HiddenSingle(int step)
     {
         var uCell = pHintGP.BDL.Where(x => x.FixedNo != 0).First();

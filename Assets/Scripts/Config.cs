@@ -34,7 +34,7 @@ public class Config : MonoBehaviour
     }
 
     public static void SaveBoardData(SudokuData.SudokuBoardData board_data, EGameMode gameMode, int level, int selected_index_at_dataOfLevel, 
-                                    int error_number, Dictionary<int, List<int>> grid_notes, bool[] hasDefaultFlags, bool noteHintMode)
+                                    int error_number, Dictionary<int, List<int>> grid_notes, bool[] hasDefaultFlags, bool noteHintMode, bool[] isHypothesisNumberFlags)
     {
         try
         {
@@ -52,6 +52,7 @@ public class Config : MonoBehaviour
                 unsolved = board_data.unsolved_data,
                 solved = board_data.solved_data,
                 hasDefaultFlags = hasDefaultFlags,
+                isHypothesisNumberFlags = isHypothesisNumberFlags,
                 noteHintMode = noteHintMode,
                 //MediumLevel = GameSettings.Instance. 
             };

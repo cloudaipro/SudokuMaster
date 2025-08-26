@@ -19,13 +19,30 @@ public class ContinueButton : MonoBehaviour
             levelText.text = "";
         }
         else {
-            var gameProgress = Config.LoadBoardData();
-            var delta_time = gameProgress.current_time;
-            //delta_time += Time.deltaTime;
-            ///TimeSpan span = TimeSpan.FromSeconds(delta_time);
-            timeText.text = FormatDeltaTime(delta_time); //String.Format("{0}:{1}:{2}", span.Hours.LeadingZero(2), span.Minutes.LeadingZero(2), span.Seconds.LeadingZero(2));
-            levelText.text = gameProgress.game_Mode.GetDescription();
-            Debug.Log(gameProgress.game_Mode.GetDescription());
+            try
+            {
+                var gameProgress = Config.LoadBoardData();
+                if (gameProgress.isHypothesisNumberFlags == null)
+                {
+                    gameObject.GetComponent<Button>().interactable = false;
+                    timeText.text = "";
+                    levelText.text = "";
+                }
+                else
+                {
+                    var delta_time = gameProgress.current_time;
+                    //delta_time += Time.deltaTime;
+                    ///TimeSpan span = TimeSpan.FromSeconds(delta_time);
+                    timeText.text = FormatDeltaTime(delta_time); //String.Format("{0}:{1}:{2}", span.Hours.LeadingZero(2), span.Minutes.LeadingZero(2), span.Seconds.LeadingZero(2));
+                    levelText.text = gameProgress.game_Mode.GetDescription();
+                    Debug.Log(gameProgress.game_Mode.GetDescription());
+                }
+            }
+            catch (Exception) {
+                gameObject.GetComponent<Button>().interactable = false;
+                timeText.text = "";
+                levelText.text = "";
+            }
         }
     }
 
