@@ -369,6 +369,7 @@ public class SudokuBoard : MonoBehaviour
             data.ShuffleNumber();
             setCellData(data);
         }
+        SaveData();
     }
     private void setCellData(SudokuData.SudokuBoardData data)
     {
@@ -447,6 +448,8 @@ public class SudokuBoard : MonoBehaviour
 
     public void HighlightAllCellsWithNumber(int number)
     {
+        if (number <= 0)
+            return;
         // First, clear all DesiredNumnber values
         grid_squares_.Select(y => y.GetComponent<SudokuCell>())
                           .ForEach(y => y.DesiredNumnber = -1);
@@ -491,6 +494,7 @@ public class SudokuBoard : MonoBehaviour
             Correct_Audio.Play();
         else
             Wrong_Audio.Play();
+        SaveData();
     }
     public bool IsNumberCompletlyPlaced(int number)
     {
@@ -548,6 +552,8 @@ public class SudokuBoard : MonoBehaviour
     public void removeNote(int square_index)
     {
         var cell = grid_squares_[square_index].GetComponent<SudokuCell>();
+        if (cell.Number <= 0) return;
+
         var hLine = LineIndicator.Instance.GetHorizontalLine(square_index);
         var vLine = LineIndicator.Instance.GetVerticalLine(square_index);
         var block = LineIndicator.Instance.GetBlockFlat(square_index);
@@ -637,6 +643,7 @@ public class SudokuBoard : MonoBehaviour
             currFastNotesData = GetAllPossibleNotes(true);
             SetGridNotes(currFastNotesData);
         }
+        SaveData();
     }
 
     private void CheckBoardCompleted()
@@ -644,6 +651,12 @@ public class SudokuBoard : MonoBehaviour
         if (DoCheckCompleted())
         {
             BoardGardientTransiton(false);
+            GameObject uiContainer = GameObject.Find("HellLevelUIContainer");
+            if (uiContainer != null)
+            {
+                uiContainer.SetActive(false);
+            }
+            
             StartCoroutine(didCompletedCoroutine());
         }
     }
@@ -733,6 +746,7 @@ public class SudokuBoard : MonoBehaviour
 
                 grid_squares_.Select(x => x.GetComponent<SudokuCell>()).ForEach(x => x.UpdateSquareColor());
             }
+            SaveData();
         });
     }
 

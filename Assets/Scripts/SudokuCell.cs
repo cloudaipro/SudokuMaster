@@ -303,6 +303,7 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
             if (note_active && !Has_Wrong_value)
             {
                 SetNoteSingleNumberValue(number, false, true);
+                GameEvents.OnSaveProgressDataMethod();
             }
             else if (!note_active)
             {
@@ -582,6 +583,7 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
             LeftLine.SetActive(false);
             RightLine.SetActive(false);
         }
+        GameEvents.OnSaveProgressDataMethod();
     }
     
     // Hell Level support methods
