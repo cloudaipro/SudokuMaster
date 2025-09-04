@@ -303,6 +303,7 @@ public class SudokuCell : Selectable, IPointerDownHandler //IPointerClickHandler
             if (note_active && !Has_Wrong_value)
             {
                 SetNoteSingleNumberValue(number, false, true);
+                GameEvents.HighlightNumberMethod(number);
                 GameEvents.OnSaveProgressDataMethod();
             }
             else if (!note_active)

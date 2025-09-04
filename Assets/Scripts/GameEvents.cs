@@ -45,6 +45,10 @@ public class GameEvents : MonoBehaviour
     public static event NumberCleared OnNumberCleared;
     public static void OnNumberClearedMethod(int number) => OnNumberCleared?.Invoke(number);
 
+    public delegate void HighlightNumber(int number);
+    public static event HighlightNumber onHighlightNumber;
+    public static void HighlightNumberMethod(int number) => onHighlightNumber?.Invoke(number);
+
     public delegate void BoardCompleted();
     public static event BoardCompleted OnBoardCompleted;
     public static void OnBoardCompletedMethod() => OnBoardCompleted?.Invoke();

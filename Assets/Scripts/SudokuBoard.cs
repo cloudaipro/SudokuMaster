@@ -155,6 +155,7 @@ public class SudokuBoard : MonoBehaviour
         GameEvents.OnDidFinishLiveRewardAd += DidFinisLiveRewardAd;
         GameEvents.OnSaveProgressData += SaveData;
         GameEvents.OnNumberCleared += OnNumberCleared;
+        GameEvents.onHighlightNumber += HighlightAllCellsWithNumber;
         NextHint.onClick.AddListener(NextHintClick);
         PrevHint.onClick.AddListener(PrevHintClick);
     }
@@ -172,6 +173,7 @@ public class SudokuBoard : MonoBehaviour
         GameEvents.OnDidFinishLiveRewardAd -= DidFinisLiveRewardAd;
         GameEvents.OnSaveProgressData -= SaveData;
         GameEvents.OnNumberCleared -= OnNumberCleared;
+        GameEvents.onHighlightNumber -= HighlightAllCellsWithNumber;
         NextHint.onClick.RemoveAllListeners();
         PrevHint.onClick.RemoveAllListeners();
 
