@@ -49,7 +49,7 @@ public class SudokuBoard : MonoBehaviour
     private int selected_dataIdx = -1;
     private float cellSize = 122f;
     private bool fastNoteMode = false;
-    private Dictionary<int, List<int>> backupGridNote = null;
+    //private Dictionary<int, List<int>> backupGridNote = null;
     private Dictionary<int, List<int>> currFastNotesData = null;
     private bool bHintMode = false;
     private UPuzzle pHintGP;
@@ -195,7 +195,7 @@ public class SudokuBoard : MonoBehaviour
         Config.SaveBoardData(new SudokuData.SudokuBoardData(unsolved_data, solved_data),
                             GameSettings.Instance.GameMode, GameSettings.Instance.Level,
                            selected_dataIdx, Lives.Instance.error_number,
-                           (fastNoteMode && backupGridNote != null) ? backupGridNote : GetGridNotes(), hasDefaultFlags
+                           GetGridNotes(), hasDefaultFlags
                            , noteHintMode, isHypothesisNumberFlags);
     }
 
@@ -733,9 +733,6 @@ public class SudokuBoard : MonoBehaviour
             }
             else
             {
-                // backup note
-                backupGridNote = GetGridNotes();
-
                 currFastNotesData = GetAllPossibleNotes();
                 SetGridNotes(currFastNotesData);
 
@@ -1004,21 +1001,12 @@ public class SudokuBoard : MonoBehaviour
             {
                 if (noteHintMode == false)
                 {
-                    if (fastNoteMode)
-                    {
-                        fastNoteMode = false;
-                        backupGridNote = null;
-                        noteHintMode = true;
-                    }
+                    var tmpNotes = GetGridNotes();
+                    var allNotes = GetAllPossibleNotes();
+                    if (tmpNotes.Keys.Count() != allNotes.Keys.Count() || NoteDataToString(tmpNotes) != NoteDataToString(allNotes))
+                        skillName = TAKE_SOME_NOTES;
                     else
-                    {
-                        var tmpNotes = GetGridNotes();
-                        var allNotes = GetAllPossibleNotes();
-                        if (tmpNotes.Keys.Count() != allNotes.Keys.Count() || NoteDataToString(tmpNotes) != NoteDataToString(allNotes))
-                            skillName = TAKE_SOME_NOTES;
-                        else
-                            noteHintMode = true;
-                    }
+                        noteHintMode = true;
                 }
                 else if (isMissingNote())
                     skillName = TAKE_SOME_NOTES;
@@ -1159,8 +1147,6 @@ public class SudokuBoard : MonoBehaviour
             if (!noteHintMode)
                 SetGridNotes(GetAllPossibleNotes());
             noteHintMode = true;
-            backupGridNote = null;
-            fastNoteMode = false;
             grid_squares_.Select(x => x.GetComponent<SudokuCell>()).ForEach(x => x.UpdateSquareColor());
             SaveData();
         }
